@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 
 import IconifyIcon from 'components/base/IconifyIcon';
-import logo from 'assets/logo/isca.png';
+import logo from 'assets/logo/isca-.png';
 import Image from 'components/base/Image';
 import navItems from 'data/nav-items';
 import NavButton from './NavButton';
@@ -19,9 +19,9 @@ const Sidebar = (): ReactElement => {
   return (
     <Stack
       justifyContent="space-between"
-      bgcolor="background.paper"
+      bgcolor="primary.dark"
       height={1}
-      boxShadow={(theme) => theme.shadows[4]}
+      boxShadow={(theme) => theme.shadows[8]}
       sx={{
         overflow: 'hidden',
         margin: { xs: 0, lg: 3.75 },
@@ -30,6 +30,7 @@ const Sidebar = (): ReactElement => {
           overflowY: 'auto',
         },
         width: 218,
+        bgcolor: 'background.blue',
       }}
     >
       <Link
@@ -42,6 +43,8 @@ const Sidebar = (): ReactElement => {
           mb: 3.75,
           bgcolor: 'background.paper',
           borderRadius: 5,
+          p: 1,
+          boxShadow: (theme) => theme.shadows[4],
         }}
       >
         <Image src={logo} width={1} />
@@ -85,16 +88,19 @@ const Sidebar = (): ReactElement => {
               LinkComponent={Link}
               href="/"
               sx={{
-                backgroundColor: 'common.white',
-                color: 'common.black',
+                bgcolor: 'background.red',
+                color: 'error.contrastText',
+                borderRadius: 2,
                 '&:hover': {
-                  backgroundColor: 'common.white',
-                  color: 'common.black',
-                  opacity: 1.5,
+                  backgroundColor: 'error.dark',
+                  color: 'error.contrastText',
+                  transform: 'translateY(-1px)',
+                  boxShadow: (theme) => theme.shadows[4],
                 },
+                transition: 'all 0.2s ease-in-out',
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ color: 'inherit' }}>
                 <IconifyIcon icon="ri:logout-circle-line" />
               </ListItemIcon>
               <ListItemText>Log out</ListItemText>

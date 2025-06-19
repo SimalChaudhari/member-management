@@ -1,40 +1,88 @@
 import { PaletteOptions } from '@mui/material';
-import { caribbeanGreen, orange, downy, watermelon, black, smoke, white, cream } from './colors';
-import { green, yellow } from '@mui/material/colors';
+import { 
+  iscaBlue, 
+  iscaTeal, 
+  iscaGold, 
+  iscaGreen, 
+  iscaOrange, 
+  iscaRed, 
+  iscaDark, 
+  iscaText, 
+  iscaBackground 
+} from './colors';
 
 const palette: PaletteOptions = {
   primary: {
-    main: orange[500],
+    main: iscaBlue[500],
+    light: iscaBlue[300],
+    dark: iscaBlue[700],
+    contrastText: '#FFFFFF',
   },
   secondary: {
-    main: caribbeanGreen[500],
+    main: iscaTeal[500],
+    light: iscaTeal[300],
+    dark: iscaTeal[700],
+    contrastText: '#FFFFFF',
   },
   info: {
-    main: downy[500],
+    main: iscaBlue[500],
+    light: iscaBlue[300],
+    dark: iscaBlue[700],
+    contrastText: '#FFFFFF',
   },
   success: {
-    main: green[500],
+    main: iscaGreen[500],
+    light: iscaGreen[300],
+    dark: iscaGreen[700],
+    contrastText: '#FFFFFF',
   },
   error: {
-    main: watermelon[500],
+    main: iscaRed[500],
+    light: iscaRed[300],
+    dark: iscaRed[700],
+    contrastText: '#FFFFFF',
+  },
+  warning: {
+    main: iscaOrange[500],
+    light: iscaOrange[300],
+    dark: iscaOrange[700],
+    contrastText: '#FFFFFF',
   },
   text: {
-    primary: black[500],
-    secondary: smoke[500],
-    disabled: smoke[200],
+    primary: iscaText.primary,
+    secondary: iscaText.secondary,
+    disabled: iscaText.disabled,
   },
   action: {
-    focus: smoke[100],
-    disabled: smoke[400],
-    active: white[300],
+    active: iscaBlue[200],
+    hover: iscaBlue[50],
+    selected: iscaBlue[100],
+    disabled: iscaDark[300],
+    disabledBackground: iscaDark[100],
+    focus: iscaBlue[100],
   },
   background: {
-    default: cream[500],
-    paper: white[50],
+    default: iscaBackground.default,
+    paper: iscaBackground.paper,
+    blue: iscaBackground.blue,
+    red: iscaBackground.red,
   },
-  divider: white[500],
-  warning: {
-    main: yellow[800],
+  divider: iscaDark[200],
+  common: {
+    black: iscaDark[900],
+    white: '#FFFFFF',
+  },
+  grey: {
+    50: iscaDark[50],
+    100: iscaDark[100],
+    200: iscaDark[200],
+    300: iscaDark[300],
+    400: iscaDark[400],
+    500: iscaDark[500],
+    600: iscaDark[600],
+    700: iscaDark[700],
+    800: iscaDark[800],
+    900: iscaDark[900],
   },
 };
 
