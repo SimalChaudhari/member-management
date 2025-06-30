@@ -221,13 +221,13 @@ const navItems: NavItem[] = [
       },
       {
         title: 'My Payments',
-        path: 'sign-up',
+        path: 'payments',
         active: true,
         collapsible: false,
       },
       {
         title: 'Contact Us',
-        path: 'forgot-password',
+        path: 'contact',
         active: true,
         collapsible: false,
       },

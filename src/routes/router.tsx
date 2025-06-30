@@ -39,6 +39,20 @@ const Account = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
+const Payments = lazy(async () => {
+  return Promise.all([
+    import('pages/settings/Payments'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const Contact = lazy(async () => {
+  return Promise.all([
+    import('pages/settings/Contact'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
 const Login = lazy(async () => import('pages/authentication/Login'));
 const SignUp = lazy(async () => import('pages/authentication/SignUp'));
 
@@ -71,6 +85,14 @@ const routes: RouteObject[] = [
           {
             path: paths.account,
             element: <Account />,
+          },
+          {
+            path: paths.payments,
+            element: <Payments />,
+          },
+          {
+            path: paths.contact,
+            element: <Contact/>,
           },
         ],
       },

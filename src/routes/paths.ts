@@ -13,6 +13,9 @@ export const rootPaths = {
 export default {
   home: `/${rootPaths.homeRoot}`,
   account: `/${rootPaths.homeRoot}/settings/account`,
+  payments: `/${rootPaths.homeRoot}/settings/payments`,
+  contact: `/${rootPaths.homeRoot}/settings/contact`,
+
   login: `/${rootPaths.authRoot}/login`,
   signup: `/${rootPaths.authRoot}/sign-up`,
   resetPassword: `/${rootPaths.authRoot}/reset-password`,

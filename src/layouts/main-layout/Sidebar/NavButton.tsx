@@ -39,9 +39,9 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
 
   const isAnySubmenuActive = (item: NavItem) => {
     if (!item.sublist) return false;
-    return item.sublist.some(subItem => 
-      pathname === `${item.path}/${subItem.path}` || 
-      (subItem.sublist && subItem.sublist.some(nestedItem => 
+    return item.sublist.some(subItem =>
+      pathname === `${item.path}/${subItem.path}` ||
+      (subItem.sublist && subItem.sublist.some(nestedItem =>
         pathname === `${item.path}/${subItem.path}/${nestedItem.path}`
       ))
     );
@@ -49,12 +49,23 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
 
   const isActive = pathname === navItem.path || isAnySubmenuActive(navItem);
 
+  const isSubmenuActive = (subItem: any) => {
+    return pathname === `${navItem.path}/${subItem.path}` ||
+      (subItem.sublist && subItem.sublist.some((nestedItem: any) =>
+        pathname === `${navItem.path}/${subItem.path}/${nestedItem.path}`
+      ));
+  };
+
+  const isNestedSubmenuActive = (subItem: any, nestedItem: any) => {
+    return pathname === `${navItem.path}/${subItem.path}/${nestedItem.path}`;
+  };
+
   return (
     <ListItem
       sx={{
         my: 1.25,
         borderRadius: 2,
-        bgcolor: isActive ? 'background.red' : 'transparent',
+        bgcolor: pathname === navItem.path ? 'background.red' : 'transparent',
         color: isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8),
         '&:hover': {
           backgroundColor: alpha('#FFFFFF', 0.1),
@@ -66,8 +77,8 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
     >
       {navItem.collapsible ? (
         <>
-          <ListItemButton 
-            LinkComponent={Link} 
+          <ListItemButton
+            LinkComponent={Link}
             onClick={() => setChecked(!checked)}
             sx={{
               backgroundColor: checked ? alpha('#FFFFFF', 0.15) : 'transparent',
@@ -80,17 +91,17 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
               transition: 'all 0.2s ease-in-out',
             }}
           >
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+            <ListItemIcon sx={{ color: 'inherit' }}>
               <IconifyIcon icon={navItem.icon as string} width={20} height={20} />
             </ListItemIcon>
-            <ListItemText 
+            <ListItemText
               primary={navItem.title}
               primaryTypographyProps={{
                 fontSize: '0.875rem',
                 fontWeight: checked ? 600 : 500,
               }}
             />
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+            <ListItemIcon sx={{ color: 'inherit' }}>
               {navItem.collapsible &&
                 (checked ? (
                   <IconifyIcon icon="mingcute:up-fill" width={16} height={16} />
@@ -105,10 +116,10 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                 <ListItem
                   key={idx}
                   sx={{
-                    backgroundColor: pathname === `${navItem.path}/${subListItem.path}` ? alpha('#FFFFFF', 0.15) : 'transparent',
-                    color: pathname === `${navItem.path}/${subListItem.path}` ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
+                    backgroundColor: isSubmenuActive(subListItem) ? 'background.red' : 'transparent',
+                    color: isSubmenuActive(subListItem) ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
                     borderRadius: 2,
-                    mx: 1,
+                    // mx: 1,
                     '&:hover': {
                       backgroundColor: alpha('#FFFFFF', 0.1),
                       color: '#FFFFFF',
@@ -130,7 +141,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                           },
                         }}
                       >
-                        <ListItemText 
+                        <ListItemText
                           sx={{ ml: 3.5 }}
                           primary={subListItem.title}
                           primaryTypographyProps={{
@@ -138,7 +149,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                             fontWeight: nestedChecked[idx] ? 600 : 500,
                           }}
                         />
-                        <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+                        <ListItemIcon sx={{ color: 'inherit' }}>
                           {subListItem.collapsible &&
                             (nestedChecked[idx] ? (
                               <IconifyIcon icon="mingcute:up-fill" width={14} height={14} />
@@ -157,21 +168,25 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                                   href={
                                     navItem.path !== '/'
                                       ? navItem.path +
-                                        '/' +
-                                        subListItem.path +
-                                        '/' +
-                                        nestedSubListItem.path
+                                      '/' +
+                                      subListItem.path +
+                                      '/' +
+                                      nestedSubListItem.path
                                       : nestedSubListItem.path
                                   }
                                   sx={{
                                     borderRadius: 2,
                                     mx: 1,
+                                    backgroundColor: isNestedSubmenuActive(subListItem, nestedSubListItem) ? 'background.red' : 'transparent',
+                                    color: isNestedSubmenuActive(subListItem, nestedSubListItem) ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
                                     '&:hover': {
                                       backgroundColor: alpha('#FFFFFF', 0.1),
+                                      color: '#FFFFFF',
                                     },
+                                    transition: 'all 0.2s ease-in-out',
                                   }}
                                 >
-                                  <ListItemText 
+                                  <ListItemText
                                     sx={{ ml: 5 }}
                                     primary={nestedSubListItem.title}
                                     primaryTypographyProps={{
@@ -192,12 +207,16 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                       href={navItem.path + '/' + subListItem.path}
                       sx={{
                         borderRadius: 2,
+                        backgroundColor: isSubmenuActive(subListItem) ? 'background.red' : 'transparent',
+                        color: isSubmenuActive(subListItem) ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
                         '&:hover': {
                           backgroundColor: alpha('#FFFFFF', 0.1),
+                          color: '#FFFFFF',
                         },
+                        transition: 'all 0.2s ease-in-out',
                       }}
                     >
-                      <ListItemText 
+                      <ListItemText
                         sx={{ ml: 3 }}
                         primary={subListItem.title}
                         primaryTypographyProps={{
@@ -216,7 +235,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
         <ListItemButton
           LinkComponent={Link}
           href={navItem.path}
-          sx={{ 
+          sx={{
             opacity: navItem.active ? 1 : 0.8,
             borderRadius: 2,
             '&:hover': {
@@ -226,10 +245,10 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
             transition: 'all 0.2s ease-in-out',
           }}
         >
-          <ListItemIcon sx={{ color: 'inherit', minWidth: 36 }}>
+          <ListItemIcon sx={{ color: 'inherit' }}>
             <IconifyIcon icon={navItem.icon as string} width={20} height={20} />
           </ListItemIcon>
-          <ListItemText 
+          <ListItemText
             primary={navItem.title}
             primaryTypographyProps={{
               fontSize: '0.875rem',

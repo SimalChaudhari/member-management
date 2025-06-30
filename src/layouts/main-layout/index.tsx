@@ -3,7 +3,6 @@ import { Box, Container, Drawer, Stack, Toolbar } from '@mui/material';
 
 import Sidebar from 'layouts/main-layout/Sidebar/Sidebar';
 import Topbar from 'layouts/main-layout/Topbar/Topbar';
-import Footer from './Footer';
 
 export const drawerWidth = 278;
 
