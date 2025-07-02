@@ -16,6 +16,8 @@ export default {
   payments: `/${rootPaths.homeRoot}/settings/payments`,
   contact: `/${rootPaths.homeRoot}/settings/contact`,
 
+  Badges: `/${rootPaths.homeRoot}/settings/badges`,
+
   login: `/${rootPaths.authRoot}/login`,
   signup: `/${rootPaths.authRoot}/sign-up`,
   resetPassword: `/${rootPaths.authRoot}/reset-password`,
