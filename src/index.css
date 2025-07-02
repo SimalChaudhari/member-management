@@ -5,3 +5,16 @@
 html {
   scroll-behavior: smooth;
 }
+
+.title-header {
+  background-color: #0E416F;
+}
+
+.bg-red-table-header-color {
+  background-color: #EE2E2A;
+}
+.css-rore5u-MuiDataGrid-columnHeaderTitle {
+  font-size: 0.94rem !important;
+  font-weight: 600 !important;
+  
+}

@@ -53,6 +53,13 @@ const Contact = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
+const Badges = lazy(async () => {
+  return Promise.all([
+    import('pages/settings/Badges'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
 const Login = lazy(async () => import('pages/authentication/Login'));
 const SignUp = lazy(async () => import('pages/authentication/SignUp'));
 
@@ -93,6 +100,11 @@ const routes: RouteObject[] = [
           {
             path: paths.contact,
             element: <Contact/>,
+          },
+
+          {
+            path: paths.Badges,
+            element: <Badges />,
           },
         ],
       },
