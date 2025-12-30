@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Outlet, RouteObject, createBrowserRouter } from 'react-router-dom';
 
-import paths, { rootPaths } from './paths';
+import { rootPaths } from './paths';
 
 import PageLoader from '../components/loading/PageLoader';
 import Splash from 'components/loading/Splash';
@@ -39,12 +39,6 @@ const Account = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
-const Payments = lazy(async () => {
-  return Promise.all([
-    import('pages/settings/Payments'),
-    new Promise((resolve) => setTimeout(resolve, 500)),
-  ]).then(([moduleExports]) => moduleExports);
-});
 
 const Contact = lazy(async () => {
   return Promise.all([
@@ -66,6 +60,11 @@ const SignUp = lazy(async () => import('pages/authentication/SignUp'));
 const ResetPassword = lazy(async () => import('pages/authentication/ResetPassword'));
 const ForgotPassword = lazy(async () => import('pages/authentication/ForgotPassword'));
 
+const ComingSoon = lazy(async () => {
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  return import('pages/ComingSoon');
+});
+
 const routes: RouteObject[] = [
   {
     element: (
@@ -85,26 +84,40 @@ const routes: RouteObject[] = [
         ),
         children: [
           {
-            path: paths.home,
+            index: true,
             element: <Sales />,
           },
-
           {
-            path: paths.account,
+            path: 'settings/account',
             element: <Account />,
           },
           {
-            path: paths.payments,
-            element: <Payments />,
+            path: 'settings/payments',
+            element: <ComingSoon />,
           },
           {
-            path: paths.contact,
+            path: 'settings/contact',
             element: <Contact/>,
           },
-
           {
-            path: paths.Badges,
+            path: 'settings/badges',
             element: <Badges />,
+          },
+          {
+            path: 'settings/reset-password',
+            element: <ComingSoon />,
+          },
+          {
+            path: 'membership',
+            element: <ComingSoon />,
+          },
+          {
+            path: 'cpe-compliance',
+            element: <ComingSoon />,
+          },
+          {
+            path: 'course-events',
+            element: <ComingSoon />,
           },
         ],
       },
@@ -119,19 +132,19 @@ const routes: RouteObject[] = [
         ),
         children: [
           {
-            path: paths.login,
+            path: 'login',
             element: <Login />,
           },
           {
-            path: paths.signup,
+            path: 'sign-up',
             element: <SignUp />,
           },
           {
-            path: paths.resetPassword,
+            path: 'reset-password',
             element: <ResetPassword />,
           },
           {
-            path: paths.forgotPassword,
+            path: 'forgot-password',
             element: <ForgotPassword />,
           },
         ],

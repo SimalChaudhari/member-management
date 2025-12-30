@@ -31,7 +31,7 @@ const navItems: NavItem[] = [
   },
   {
     title: 'Membership',
-    path: '#!',
+    path: '/membership',
    icon: 'mdi:account-group',
     active: false,
     collapsible: false,
@@ -120,7 +120,7 @@ const navItems: NavItem[] = [
   },
   {
     title: 'CPE Compliance',
-    path: '#!',
+    path: '/cpe-compliance',
   icon: 'mdi:certificate',
     active: false,
     collapsible: false,
@@ -153,7 +153,7 @@ const navItems: NavItem[] = [
   },
   {
     title: 'Course & Events',
-    path: '#!',
+    path: '/course-events',
     icon: 'mdi:calendar-multiple',
     active: false,
     collapsible: false,
