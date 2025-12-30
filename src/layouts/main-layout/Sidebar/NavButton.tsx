@@ -85,6 +85,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
               backgroundColor: 'transparent',
               color: checked ? '#333333' : (isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8)),
               borderRadius: checked ? '8px 8px 0 0' : 2,
+              overflow: 'hidden',
               '&:hover': {
                 backgroundColor: 'transparent',
                 color: checked ? '#333333' : '#FFFFFF',
@@ -92,17 +93,19 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
               transition: 'all 0.2s ease-in-out',
             }}
           >
-            <ListItemIcon sx={{ color: 'inherit' }}>
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 24, maxWidth: 24, mr: 0 }}>
               <IconifyIcon icon={navItem.icon as string} width={20} height={20} />
             </ListItemIcon>
             <ListItemText
               primary={navItem.title}
+              sx={{ ml: -0.9, flex: 1 }}
               primaryTypographyProps={{
                 fontSize: '0.875rem',
                 fontWeight: checked ? 600 : 500,
+                whiteSpace: 'nowrap',
               }}
             />
-            <ListItemIcon sx={{ color: 'inherit' }}>
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 24, maxWidth: 24, ml: 'auto', flexShrink: 0 }}>
               {navItem.collapsible &&
                 (checked ? (
                   <IconifyIcon icon="mingcute:up-fill" width={16} height={16} />
@@ -112,7 +115,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
             </ListItemIcon>
           </ListItemButton>
           <Collapse in={checked}>
-            <List sx={{ bgcolor: '#FFFFFF', borderRadius: '0 0 8px 8px', p: 0.5, mt: 0 }}>
+            <List sx={{ bgcolor: '#FFFFFF', borderRadius: '0 0 8px 8px', p: 0.5, pb: 0.5, mt: 0 }}>
               {navItem.sublist?.map((subListItem: any, idx: number) => (
                 <ListItem
                   key={idx}
@@ -121,9 +124,6 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                     color: '#333333',
                     borderRadius: 2,
                     mb: 1.5,
-                    '&:last-child': {
-                      mb: 0,
-                    },
                     '&:hover': {
                       backgroundColor: '#F5F5F5',
                       color: '#333333',
@@ -249,6 +249,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
             backgroundColor: 'transparent',
             color: isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8),
             borderRadius: 2,
+            overflow: 'hidden',
             '&:hover': {
               backgroundColor: alpha('#FFFFFF', 0.1),
               color: '#FFFFFF',
@@ -256,14 +257,16 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
             transition: 'all 0.2s ease-in-out',
           }}
         >
-          <ListItemIcon sx={{ color: 'inherit' }}>
+          <ListItemIcon sx={{ color: 'inherit', minWidth: 24, maxWidth: 24, mr: 0 }}>
             <IconifyIcon icon={navItem.icon as string} width={20} height={20} />
           </ListItemIcon>
           <ListItemText
             primary={navItem.title}
+            sx={{ ml: -0.5, flex: 1 }}
             primaryTypographyProps={{
               fontSize: '0.875rem',
               fontWeight: isActive ? 600 : 500,
+              whiteSpace: 'nowrap',
             }}
           />
         </ListItemButton>

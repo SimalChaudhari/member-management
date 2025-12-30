@@ -4,12 +4,11 @@ import { ReactElement } from 'react';
 
 import TopSellingProduct from 'components/sections/dashboard/Home/Sales/TopSellingProduct/TopSellingProduct';
 import WebsiteVisitors from 'components/sections/dashboard/Home/Sales/WebsiteVisitors/WebsiteVisitors';
-import SaleInfoCards from 'components/sections/dashboard/Home/Sales/SaleInfoSection/SaleInfoCards';
+import DashboardCards from 'components/sections/dashboard/Home/Sales/DashboardCards/DashboardCards';
 import BuyersProfile from 'components/sections/dashboard/Home/Sales/BuyersProfile/BuyersProfile';
 import NewCustomers from 'components/sections/dashboard/Home/Sales/NewCustomers/NewCustomers';
 import Revenue from 'components/sections/dashboard/Home/Sales/Revenue/Revenue';
 
-import { drawerWidth } from 'layouts/main-layout';
 
 const Sales = (): ReactElement => {
   return (
@@ -28,7 +27,7 @@ const Sales = (): ReactElement => {
       }}
     >
       <Grid xs={12}>
-        <SaleInfoCards />
+        <DashboardCards />
       </Grid>
       <Grid xs={12} md={8}>
         <Revenue />

@@ -4,7 +4,7 @@ import { Box, Container, Drawer, Stack } from '@mui/material';
 import Sidebar from 'layouts/main-layout/Sidebar/Sidebar';
 import Topbar from 'layouts/main-layout/Topbar/Topbar';
 
-export const drawerWidth = 300;
+export const drawerWidth = 340;
 
 const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -29,10 +29,17 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
     <>
       <Stack 
         direction="row" 
-        minHeight="100vh"
         height="100vh"
         bgcolor="background.default"
-        sx={{ width: '100%', overflow: 'hidden' }}
+        sx={{ 
+          width: '100%', 
+          overflow: 'hidden',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        }}
       >
         <Box
           component="nav"
@@ -81,6 +88,8 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
             width: { lg: `calc(100% - ${drawerWidth}px)` },
             height: '100%',
             overflow: 'hidden',
+            border: 'none',
+            outline: 'none',
           }}
         >
           <Topbar handleDrawerToggle={handleDrawerToggle} />
@@ -90,11 +99,23 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
               flexGrow: 1,
               pt: 0,
               pb: 0,
-              height: '100%',
+              minHeight: 0,
               overflow: 'auto',
+              border: 'none',
+              outline: 'none',
             }}
           >
-            <Container maxWidth={false} sx={{ width: '100%', height: '100%', px: 3 }}>
+            <Container 
+              maxWidth={false} 
+              sx={{ 
+                width: '100%', 
+                px: { xs: 0, lg: 3 },
+                pt: { xs: 0, lg: 0 },
+                pb: { xs: 0, lg: 4 },
+                border: 'none',
+                outline: 'none',
+              }}
+            >
               {children}
             </Container>
           </Box>

@@ -24,12 +24,12 @@ const Sidebar = (): ReactElement => {
       boxShadow={(theme) => theme.shadows[8]}
       sx={{
         overflow: 'hidden',
-        margin: { xs: 0, lg: 3.75 },
+        margin: { xs: 0, lg: 2.75 },
         borderRadius: { xs: 0, lg: 5 },
         '&:hover': {
           overflowY: 'auto',
         },
-        width: 240,
+        width: 300,
         bgcolor: '#265EAC',
       }}
     >
@@ -46,13 +46,13 @@ const Sidebar = (): ReactElement => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            width: 180,
+            width: 190,
             bgcolor: '#FFFFFF',
             borderRadius: 0,
             boxShadow: (theme) => theme.shadows[2],
           }}
         >
-          <Image src={logo} width={1} />
+          <Image src={logo} width={0.8} />
         </Link>
       </Stack>
       <Stack
@@ -63,7 +63,7 @@ const Sidebar = (): ReactElement => {
           '&:hover': {
             overflowY: 'auto',
           },
-          width: 240,
+          width: 300,
         }}
       >
         <List
@@ -71,7 +71,7 @@ const Sidebar = (): ReactElement => {
             mx: 2.5,
             py: 1.25,
             flex: '1 1 auto',
-            width: 200,
+            width: 260,
           }}
         >
           {navItems.map((navItem, index) => (
