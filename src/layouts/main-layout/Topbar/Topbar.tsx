@@ -9,7 +9,7 @@ import {
   Toolbar,
 } from '@mui/material';
 import IconifyIcon from 'components/base/IconifyIcon';
-import AccountDropdown from './AccountDropdown';
+// import AccountDropdown from './AccountDropdown';
 import Image from 'components/base/Image';
 import logo from 'assets/logo/elegent-favicon-logo.png';
 
@@ -74,9 +74,9 @@ const Topbar = ({ handleDrawerToggle }: TopbarProps): ReactElement => {
               }}
             />
           </Stack>
-          <Stack direction="row" alignItems="center" gap={{ xs: 1, sm: 1.75 }}>
+          {/* <Stack direction="row" alignItems="center" gap={{ xs: 1, sm: 1.75 }}>
             <AccountDropdown />
-          </Stack>
+          </Stack> */}
         </Toolbar>
       </Container>
     </AppBar>

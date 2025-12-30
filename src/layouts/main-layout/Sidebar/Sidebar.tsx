@@ -14,6 +14,7 @@ import logo from 'assets/logo/isca-.png';
 import Image from 'components/base/Image';
 import navItems from 'data/nav-items';
 import NavButton from './NavButton';
+import ProfileDropdown from './ProfileDropdown';
 
 const Sidebar = (): ReactElement => {
   return (
@@ -34,31 +35,49 @@ const Sidebar = (): ReactElement => {
       }}
     >
       <Stack
-        alignItems="center"
         sx={{
-          pt: { xs: 4, lg: 5 },
-          pb: 3,
+          pt: { xs: 3, lg: 4 },
+          pb: 2,
         }}
       >
-        <Link
-          href="/"
+        {/* Logo Section */}
+        <Stack
+          alignItems="center"
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 190,
-            bgcolor: '#FFFFFF',
-            borderRadius: 0,
-            boxShadow: (theme) => theme.shadows[2],
+            mb: 3,
+            px: 0,
           }}
         >
-          <Image src={logo} width={0.8} />
-        </Link>
+          <Link
+            href="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 'calc(100% - 32px)',
+              mx: 2,
+              bgcolor: '#FFFFFF',
+              borderRadius: 2,
+              boxShadow: (theme) => theme.shadows[3],
+              textDecoration: 'none',
+              transition: 'all 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'translateY(-1px)',
+                boxShadow: (theme) => theme.shadows[6],
+              },
+            }}
+          >
+            <Image src={logo} width={0.6} />
+          </Link>
+        </Stack>
+        
+        {/* Profile Section */}
+        <ProfileDropdown />
       </Stack>
       <Stack
         justifyContent="space-between"
-        height={1}
         sx={{
+          flex: 1,
           overflow: 'hidden',
           '&:hover': {
             overflowY: 'auto',
@@ -66,27 +85,36 @@ const Sidebar = (): ReactElement => {
           width: 300,
         }}
       >
+        {/* Navigation Menu */}
         <List
           sx={{
-            mx: 2.5,
-            py: 1.25,
+            px: 2,
+            py: 1,
             flex: '1 1 auto',
-            width: 260,
+            width: '100%',
+            '& .MuiListItem-root': {
+              px: 0,
+            },
           }}
         >
           {navItems.map((navItem, index) => (
             <NavButton key={index} navItem={navItem} Link={Link} />
           ))}
         </List>
+        
+        {/* Logout Button */}
         <List
           sx={{
-            mx: 2.5,
+            px: 2,
+            pb: 2.5,
+            pt: 1,
+            width: '100%',
           }}
         >
           <ListItem
             sx={{
-              mx: 0,
-              my: 2.5,
+              px: 0,
+              py: 0.5,
             }}
           >
             <ListItemButton
@@ -96,19 +124,27 @@ const Sidebar = (): ReactElement => {
                 bgcolor: '#FFFFFF',
                 color: '#000000',
                 borderRadius: 2,
+                py: 1.25,
+                px: 2,
                 '&:hover': {
                   backgroundColor: '#FFFFFF',
                   color: '#000000',
-                  transform: 'translateY(-1px)',
-                  boxShadow: (theme) => theme.shadows[4],
+                  transform: 'translateY(-2px)',
+                  boxShadow: (theme) => theme.shadows[6],
                 },
                 transition: 'all 0.2s ease-in-out',
               }}
             >
-              <ListItemIcon sx={{ color: 'inherit' }}>
-                <IconifyIcon icon="ri:logout-circle-line" />
+              <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+                <IconifyIcon icon="ri:logout-circle-line" width={20} height={20} />
               </ListItemIcon>
-              <ListItemText>Log out</ListItemText>
+              <ListItemText 
+                primary="Log out"
+                primaryTypographyProps={{
+                  fontWeight: 500,
+                  fontSize: '0.95rem',
+                }}
+              />
             </ListItemButton>
           </ListItem>
         </List>

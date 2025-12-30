@@ -12,44 +12,42 @@ import Revenue from 'components/sections/dashboard/Home/Sales/Revenue/Revenue';
 
 const Sales = (): ReactElement => {
   return (
-    <Grid
-      container
-      component="main"
-      columns={12}
-      spacing={3.75}
-      flexGrow={1}
-      pt={4.375}
-      pr={1.875}
-      pb={0}
-      sx={{
-        // width: { md: `calc(100% - ${drawerWidth}px)` },
-        pl: { xs: 3.75, lg: 0 },
-      }}
-    >
-      <Grid xs={12}>
-        <DashboardCards />
+    <Stack spacing={{ xs: 0, sm: 2, md: 3 }} sx={{ width: '100%' }}>
+      {/* First Grid: Dashboard Cards */}
+      <Grid container spacing={{ xs: 0, sm: 2, md: 3 }}>
+        <Grid xs={12}>
+          <DashboardCards />
+        </Grid>
       </Grid>
-      <Grid xs={12} md={8}>
-        <Revenue />
+
+      {/* Second Grid: Charts */}
+      <Grid container spacing={{ xs: 0, sm: 2, md: 3 }}>
+        <Grid xs={12} md={8}>
+          <Revenue />
+        </Grid>
+        <Grid xs={12} md={4}>
+          <WebsiteVisitors />
+        </Grid>
       </Grid>
-      <Grid xs={12} md={4}>
-        <WebsiteVisitors />
+
+      {/* Additional Grid: Other Components */}
+      <Grid container spacing={{ xs: 0, sm: 2, md: 3 }}>
+        <Grid xs={12} lg={8}>
+          <TopSellingProduct />
+        </Grid>
+        <Grid xs={12} lg={4}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row', lg: 'column' }}
+            gap={{ xs: 0, sm: 2, md: 3 }}
+            height={1}
+            width={1}
+          >
+            <NewCustomers />
+            <BuyersProfile />
+          </Stack>
+        </Grid>
       </Grid>
-      <Grid xs={12} lg={8}>
-        <TopSellingProduct />
-      </Grid>
-      <Grid xs={12} lg={4}>
-        <Stack
-          direction={{ xs: 'column', sm: 'row', lg: 'column' }}
-          gap={3.75}
-          height={1}
-          width={1}
-        >
-          <NewCustomers />
-          <BuyersProfile />
-        </Stack>
-      </Grid>
-    </Grid>
+    </Stack>
   );
 };
 

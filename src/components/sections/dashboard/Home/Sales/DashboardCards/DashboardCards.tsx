@@ -9,7 +9,7 @@ const DashboardCards = (): ReactElement => {
   };
 
   return (
-    <Grid container spacing={3} sx={{ display: 'flex' }}>
+    <Grid container spacing={{ xs: 0, sm: 2, md: 3 }} sx={{ display: 'flex', m: 0 }}>
       <Grid xs={12} sm={6} md={3} sx={{ display: 'flex' }}>
         <DashboardCard
           title="Renewal Due Reminder"
@@ -42,7 +42,7 @@ const DashboardCards = (): ReactElement => {
           title="Quick Download"
           icon="mdi:card-account-details"
           description="Download your digital membership e-Card"
-          buttonText="Download e-Card"
+          buttonText="Download"
           buttonAction={handleDownloadECard}
           color="primary"
         />

@@ -101,6 +101,8 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
               pb: 0,
               minHeight: 0,
               overflow: 'auto',
+              overflowX: 'hidden',
+              width: '100%',
               border: 'none',
               outline: 'none',
             }}
@@ -108,12 +110,13 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
             <Container 
               maxWidth={false} 
               sx={{ 
-                width: '100%', 
-                px: { xs: 0, lg: 3 },
-                pt: { xs: 0, lg: 0 },
-                pb: { xs: 0, lg: 4 },
-                border: 'none',
-                outline: 'none',
+                width: '100%',
+                maxWidth: '100%',
+                px: { xs: 0, sm: 2.5, md: 3, lg: 3 },
+                pt: { xs: 0, sm: 2.5, md: 3 },
+                pb: { xs: 0, sm: 2.5, md: 3, lg: 4 },
+                mx: 0,
+                boxSizing: 'border-box',
               }}
             >
               {children}
