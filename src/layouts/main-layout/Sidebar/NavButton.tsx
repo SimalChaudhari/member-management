@@ -64,15 +64,16 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
     <ListItem
       sx={{
         my: 1.25,
-        borderRadius: 2,
-        bgcolor: pathname === navItem.path ? 'background.red' : 'transparent',
-        color: isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8),
+        borderRadius: checked ? 2 : 2,
+        bgcolor: checked ? '#FFFFFF' : 'transparent',
+        color: checked ? '#333333' : (isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8)),
         '&:hover': {
-          backgroundColor: alpha('#FFFFFF', 0.1),
-          color: '#FFFFFF',
-          transform: 'translateX(4px)',
+          backgroundColor: checked ? '#FFFFFF' : alpha('#FFFFFF', 0.1),
+          color: checked ? '#333333' : '#FFFFFF',
+          transform: checked ? 'none' : 'translateX(4px)',
         },
         transition: 'all 0.2s ease-in-out',
+        p: 0,
       }}
     >
       {navItem.collapsible ? (
@@ -81,12 +82,12 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
             LinkComponent={Link}
             onClick={() => setChecked(!checked)}
             sx={{
-              backgroundColor: checked ? alpha('#FFFFFF', 0.15) : 'transparent',
-              color: checked ? '#FFFFFF' : alpha('#FFFFFF', 0.8),
-              borderRadius: 2,
+              backgroundColor: 'transparent',
+              color: checked ? '#333333' : (isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8)),
+              borderRadius: checked ? '8px 8px 0 0' : 2,
               '&:hover': {
-                backgroundColor: alpha('#FFFFFF', 0.1),
-                color: '#FFFFFF',
+                backgroundColor: 'transparent',
+                color: checked ? '#333333' : '#FFFFFF',
               },
               transition: 'all 0.2s ease-in-out',
             }}
@@ -111,18 +112,21 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
             </ListItemIcon>
           </ListItemButton>
           <Collapse in={checked}>
-            <List sx={{ mt: 1 }}>
+            <List sx={{ bgcolor: '#FFFFFF', borderRadius: '0 0 8px 8px', p: 0.5, mt: 0 }}>
               {navItem.sublist?.map((subListItem: any, idx: number) => (
                 <ListItem
                   key={idx}
                   sx={{
-                    backgroundColor: isSubmenuActive(subListItem) ? 'background.red' : 'transparent',
-                    color: isSubmenuActive(subListItem) ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
+                    backgroundColor: isSubmenuActive(subListItem) ? '#F5F5F5' : 'transparent',
+                    color: '#333333',
                     borderRadius: 2,
-                    // mx: 1,
+                    mb: 1.5,
+                    '&:last-child': {
+                      mb: 0,
+                    },
                     '&:hover': {
-                      backgroundColor: alpha('#FFFFFF', 0.1),
-                      color: '#FFFFFF',
+                      backgroundColor: '#F5F5F5',
+                      color: '#333333',
                     },
                     transition: 'all 0.2s ease-in-out',
                   }}
@@ -136,8 +140,9 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                         }}
                         sx={{
                           borderRadius: 2,
+                          color: '#333333',
                           '&:hover': {
-                            backgroundColor: alpha('#FFFFFF', 0.1),
+                            backgroundColor: '#F5F5F5',
                           },
                         }}
                       >
@@ -147,6 +152,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                           primaryTypographyProps={{
                             fontSize: '0.8125rem',
                             fontWeight: nestedChecked[idx] ? 600 : 500,
+                            whiteSpace: 'nowrap',
                           }}
                         />
                         <ListItemIcon sx={{ color: 'inherit' }}>
@@ -159,7 +165,7 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                         </ListItemIcon>
                       </ListItemButton>
                       <Collapse in={nestedChecked[idx]}>
-                        <List>
+                        <List sx={{ bgcolor: '#FFFFFF', borderRadius: 2, p: 0.5 }}>
                           {subListItem?.sublist?.map(
                             (nestedSubListItem: any, nestedIdx: number) => (
                               <ListItem key={nestedIdx}>
@@ -177,11 +183,11 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                                   sx={{
                                     borderRadius: 2,
                                     mx: 1,
-                                    backgroundColor: isNestedSubmenuActive(subListItem, nestedSubListItem) ? 'background.red' : 'transparent',
-                                    color: isNestedSubmenuActive(subListItem, nestedSubListItem) ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
+                                    backgroundColor: isNestedSubmenuActive(subListItem, nestedSubListItem) ? '#F5F5F5' : 'transparent',
+                                    color: '#333333',
                                     '&:hover': {
-                                      backgroundColor: alpha('#FFFFFF', 0.1),
-                                      color: '#FFFFFF',
+                                      backgroundColor: '#F5F5F5',
+                                      color: '#333333',
                                     },
                                     transition: 'all 0.2s ease-in-out',
                                   }}
@@ -207,21 +213,25 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
                       href={navItem.path + '/' + subListItem.path}
                       sx={{
                         borderRadius: 2,
-                        backgroundColor: isSubmenuActive(subListItem) ? 'background.red' : 'transparent',
-                        color: isSubmenuActive(subListItem) ? '#FFFFFF' : alpha('#FFFFFF', 0.7),
+                        backgroundColor: isSubmenuActive(subListItem) ? '#F5F5F5' : 'transparent',
+                        color: '#333333',
+                        py: 0.75,
+                        minHeight: 40,
                         '&:hover': {
-                          backgroundColor: alpha('#FFFFFF', 0.1),
-                          color: '#FFFFFF',
+                          backgroundColor: '#F5F5F5',
+                          color: '#333333',
                         },
                         transition: 'all 0.2s ease-in-out',
                       }}
                     >
                       <ListItemText
-                        sx={{ ml: 3 }}
+                        sx={{ ml: 3, my: 0 }}
                         primary={subListItem.title}
                         primaryTypographyProps={{
                           fontSize: '0.8125rem',
                           fontWeight: 500,
+                          lineHeight: 1.5,
+                          whiteSpace: 'nowrap',
                         }}
                       />
                     </ListItemButton>
@@ -236,11 +246,12 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
           LinkComponent={Link}
           href={navItem.path}
           sx={{
-            opacity: navItem.active ? 1 : 0.8,
+            backgroundColor: 'transparent',
+            color: isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8),
             borderRadius: 2,
             '&:hover': {
               backgroundColor: alpha('#FFFFFF', 0.1),
-              opacity: 1,
+              color: '#FFFFFF',
             },
             transition: 'all 0.2s ease-in-out',
           }}

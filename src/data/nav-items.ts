@@ -226,13 +226,6 @@ const navItems: NavItem[] = [
         collapsible: false,
       },
       {
-        title: 'My Badges',
-        path: 'badges',
-        active: true,
-        collapsible: false,
-      },
-      
-      {
         title: 'Contact Us',
         path: 'contact',
         active: true,

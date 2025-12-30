@@ -9,7 +9,6 @@ import {
   Toolbar,
 } from '@mui/material';
 import IconifyIcon from 'components/base/IconifyIcon';
-import { drawerWidth } from 'layouts/main-layout';
 import AccountDropdown from './AccountDropdown';
 import Image from 'components/base/Image';
 import logo from 'assets/logo/elegent-favicon-logo.png';
@@ -21,16 +20,19 @@ interface TopbarProps {
 const Topbar = ({ handleDrawerToggle }: TopbarProps): ReactElement => {
   return (
     <AppBar
+      position="relative"
       sx={{
-        width: { lg: `calc(100% - ${drawerWidth}px + 24px)` },
-        ml: { lg: `${drawerWidth}px` },
+        width: '100%',
+        ml: 0,
         backgroundColor: { xs: '#0E416F', lg: 'inherit' },
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth={false} sx={{ width: '100%', px: 3 }}>
         <Toolbar
           sx={{
-            p: 2.75,
+            px: 0,
+            py: 2.75,
+            minHeight: 'auto',
           }}
         >
           <Stack direction="row" gap={1} display={{ xs: 'block', lg: 'none' }}>

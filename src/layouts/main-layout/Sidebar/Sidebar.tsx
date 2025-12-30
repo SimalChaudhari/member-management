@@ -29,37 +29,41 @@ const Sidebar = (): ReactElement => {
         '&:hover': {
           overflowY: 'auto',
         },
-        width: 218,
-        bgcolor: 'background.blue',
+        width: 240,
+        bgcolor: '#265EAC',
       }}
     >
-      <Link
-        href="/"
+      <Stack
+        alignItems="center"
         sx={{
-          position: 'fixed',
-          zIndex: 5,
-          mt: { xs: 5, lg: 6.25 },
-          mx: { xs: 2 },
-          mb: 3.75,
-          width: { xs: 180 },
-          bgcolor: 'background.paper',
-          borderRadius: 5,
-          p: 1,
-          boxShadow: (theme) => theme.shadows[4],
+          pt: { xs: 4, lg: 5 },
+          pb: 3,
         }}
       >
-        <Image src={logo} width={1} />
-      </Link>
+        <Link
+          href="/"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 180,
+            bgcolor: '#FFFFFF',
+            borderRadius: 0,
+            boxShadow: (theme) => theme.shadows[2],
+          }}
+        >
+          <Image src={logo} width={1} />
+        </Link>
+      </Stack>
       <Stack
         justifyContent="space-between"
-        mt={16.25}
         height={1}
         sx={{
           overflow: 'hidden',
           '&:hover': {
             overflowY: 'auto',
           },
-          width: 218,
+          width: 240,
         }}
       >
         <List
@@ -67,7 +71,7 @@ const Sidebar = (): ReactElement => {
             mx: 2.5,
             py: 1.25,
             flex: '1 1 auto',
-            width: 178,
+            width: 200,
           }}
         >
           {navItems.map((navItem, index) => (
@@ -89,12 +93,12 @@ const Sidebar = (): ReactElement => {
               LinkComponent={Link}
               href="/"
               sx={{
-                bgcolor: 'background.red',
-                color: 'error.contrastText',
+                bgcolor: '#FFFFFF',
+                color: '#000000',
                 borderRadius: 2,
                 '&:hover': {
-                  backgroundColor: 'error.dark',
-                  color: 'error.contrastText',
+                  backgroundColor: '#FFFFFF',
+                  color: '#000000',
                   transform: 'translateY(-1px)',
                   boxShadow: (theme) => theme.shadows[4],
                 },

@@ -1,10 +1,10 @@
 import { PropsWithChildren, ReactElement, useState } from 'react';
-import { Box, Container, Drawer, Stack, Toolbar } from '@mui/material';
+import { Box, Container, Drawer, Stack } from '@mui/material';
 
 import Sidebar from 'layouts/main-layout/Sidebar/Sidebar';
 import Topbar from 'layouts/main-layout/Topbar/Topbar';
 
-export const drawerWidth = 278;
+export const drawerWidth = 300;
 
 const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -27,10 +27,13 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
 
   return (
     <>
-      <Stack direction="row" 
-      // minHeight="100vh" 
-      bgcolor="background.default">
-        <Topbar handleDrawerToggle={handleDrawerToggle} />
+      <Stack 
+        direction="row" 
+        minHeight="100vh"
+        height="100vh"
+        bgcolor="background.default"
+        sx={{ width: '100%', overflow: 'hidden' }}
+      >
         <Box
           component="nav"
           sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
@@ -71,17 +74,31 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
             <Sidebar />
           </Drawer>
         </Box>
-        <Toolbar
+        <Stack
+          direction="column"
           sx={{
-            pt: 12,
-            width: 1,
-            pb: 0,
+            flexGrow: 1,
+            width: { lg: `calc(100% - ${drawerWidth}px)` },
+            height: '100%',
+            overflow: 'hidden',
           }}
         >
-          <Container maxWidth="xl">
-          {children}
-          </Container>
-        </Toolbar>
+          <Topbar handleDrawerToggle={handleDrawerToggle} />
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              pt: 0,
+              pb: 0,
+              height: '100%',
+              overflow: 'auto',
+            }}
+          >
+            <Container maxWidth={false} sx={{ width: '100%', height: '100%', px: 3 }}>
+              {children}
+            </Container>
+          </Box>
+        </Stack>
       </Stack>
       {/* <Footer /> */}
     </>
