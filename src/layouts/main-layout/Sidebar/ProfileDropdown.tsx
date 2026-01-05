@@ -18,12 +18,14 @@ interface ProfileDropdownProps {
   userName?: string;
   userStatus?: string;
   avatarSrc?: string;
+  isCollapsed?: boolean;
 }
 
 const ProfileDropdown = ({
   userName = 'Courtney Henry',
   userStatus = 'Online',
   avatarSrc = profile,
+  isCollapsed = false,
 }: ProfileDropdownProps): ReactElement => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -41,17 +43,18 @@ const ProfileDropdown = ({
       <Stack
         direction="row"
         alignItems="center"
+        justifyContent={isCollapsed ? 'center' : 'flex-start'}
         onClick={handleProfileClick}
         id="profile-menu-button"
         aria-controls={open ? 'profile-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         sx={{
-          width: 'calc(100% - 32px)',
-          mx: 2,
-          px: 2,
-          py: 1.5,
-          gap: 1.5,
+          width: isCollapsed ? 'calc(100% - 16px)' : 'calc(100% - 32px)',
+          mx: isCollapsed ? 1 : 2,
+          px: isCollapsed ? 1 : 2,
+          py: isCollapsed ? 1 : 1.5,
+          gap: isCollapsed ? 0 : 1.5,
           cursor: 'pointer',
           bgcolor: 'rgba(255, 255, 255, 0.15)',
           transition: 'all 0.2s ease-in-out',
@@ -66,8 +69,8 @@ const ProfileDropdown = ({
             alt={userName}
             src={avatarSrc}
             sx={{
-              width: 48,
-              height: 48,
+              width: isCollapsed ? 40 : 48,
+              height: isCollapsed ? 40 : 48,
               border: '2px solid #FFFFFF',
             }}
           />
@@ -76,53 +79,57 @@ const ProfileDropdown = ({
               position: 'absolute',
               bottom: 0,
               right: 0,
-              width: 14,
-              height: 14,
+              width: isCollapsed ? 12 : 14,
+              height: isCollapsed ? 12 : 14,
               bgcolor: '#4CAF50',
               border: '2px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '50%',
             }}
           />
         </Box>
-        <Stack sx={{ flex: 1, minWidth: 0 }}>
-          <Typography
-            variant="body1"
-            sx={{
-              fontWeight: 600,
-              color: '#FFFFFF',
-              fontSize: '0.95rem',
-              lineHeight: 1.3,
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              mb: 0.25,
-            }}
-          >
-            {userName}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              color: 'rgba(255, 255, 255, 0.8)',
-              fontSize: '0.8rem',
-              fontWeight: 400,
-            }}
-          >
-            {userStatus}
-          </Typography>
-        </Stack>
-        <IconifyIcon
-          icon="ion:chevron-down-outline"
-          width={20}
-          height={20}
-          color="#FFFFFF"
-          sx={{
-            opacity: 0.85,
-            flexShrink: 0,
-            transition: 'transform 0.2s ease-in-out',
-            transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-          }}
-        />
+        {!isCollapsed && (
+          <>
+            <Stack sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  fontWeight: 600,
+                  color: '#FFFFFF',
+                  fontSize: '0.95rem',
+                  lineHeight: 1.3,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  mb: 0.25,
+                }}
+              >
+                {userName}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.8)',
+                  fontSize: '0.8rem',
+                  fontWeight: 400,
+                }}
+              >
+                {userStatus}
+              </Typography>
+            </Stack>
+            <IconifyIcon
+              icon="ion:chevron-down-outline"
+              width={20}
+              height={20}
+              color="#FFFFFF"
+              sx={{
+                opacity: 0.85,
+                flexShrink: 0,
+                transition: 'transform 0.2s ease-in-out',
+                transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
+              }}
+            />
+          </>
+        )}
       </Stack>
       <Menu
         id="profile-menu"

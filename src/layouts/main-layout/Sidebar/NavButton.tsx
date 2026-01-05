@@ -17,9 +17,10 @@ import { NavItem } from 'data/nav-items';
 interface NavItemProps {
   navItem: NavItem;
   Link: OverridableComponent<LinkTypeMap>;
+  isCollapsed?: boolean;
 }
 
-const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
+const NavButton = ({ navItem, Link, isCollapsed = false }: NavItemProps): ReactElement => {
   const { pathname } = useLocation();
   const [checked, setChecked] = useState(false);
   const [nestedChecked, setNestedChecked] = useState<boolean[]>([]);
@@ -65,56 +66,98 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
       sx={{
         my: 1.25,
         borderRadius: checked ? 2 : 2,
-        bgcolor: checked ? '#FFFFFF' : 'transparent',
+        bgcolor: checked ? '#FFFFFF' : (isCollapsed && isActive ? alpha('#FFFFFF', 0.15) : 'transparent'),
         color: checked ? '#333333' : (isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8)),
+        position: 'relative',
         '&:hover': {
           backgroundColor: checked ? '#FFFFFF' : alpha('#FFFFFF', 0.1),
           color: checked ? '#333333' : '#FFFFFF',
-          transform: checked ? 'none' : 'translateX(4px)',
+          transform: checked ? 'none' : (isCollapsed ? 'none' : 'translateX(4px)'),
         },
         transition: 'all 0.2s ease-in-out',
         p: 0,
+        // Active indicator for collapsed state
+        ...(isCollapsed && isActive && {
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            left: 0,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 4,
+            height: '60%',
+            backgroundColor: '#FFFFFF',
+            borderRadius: '0 4px 4px 0',
+          },
+        }),
       }}
     >
       {navItem.collapsible ? (
         <>
           <ListItemButton
             LinkComponent={Link}
-            onClick={() => setChecked(!checked)}
+            href={navItem.path}
+            onClick={() => {
+              // Only toggle collapse when sidebar is expanded
+              if (!isCollapsed) {
+                setChecked(!checked);
+              }
+            }}
             sx={{
-              backgroundColor: 'transparent',
+              backgroundColor: isCollapsed && isActive ? alpha('#FFFFFF', 0.15) : 'transparent',
               color: checked ? '#333333' : (isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8)),
               borderRadius: checked ? '8px 8px 0 0' : 2,
               overflow: 'hidden',
+              justifyContent: isCollapsed ? 'center' : 'flex-start',
+              px: isCollapsed ? 1 : 2,
+              py: isCollapsed ? 1.5 : 1.25,
+              minHeight: isCollapsed ? 48 : 'auto',
+              cursor: 'pointer',
+              borderLeft: isCollapsed && isActive ? '4px solid #FFFFFF' : 'none',
               '&:hover': {
-                backgroundColor: 'transparent',
+                backgroundColor: isCollapsed ? (isActive ? alpha('#FFFFFF', 0.2) : alpha('#FFFFFF', 0.1)) : 'transparent',
                 color: checked ? '#333333' : '#FFFFFF',
               },
               transition: 'all 0.2s ease-in-out',
             }}
           >
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 24, maxWidth: 24, mr: 0 }}>
+            <ListItemIcon sx={{ color: 'inherit', minWidth: isCollapsed ? 40 : 24, maxWidth: isCollapsed ? 40 : 24, mr: isCollapsed ? 0 : 0, justifyContent: 'center' }}>
               <IconifyIcon icon={navItem.icon as string} width={20} height={20} />
             </ListItemIcon>
-            <ListItemText
-              primary={navItem.title}
-              sx={{ ml: -0.9, flex: 1 }}
-              primaryTypographyProps={{
-                fontSize: '0.875rem',
-                fontWeight: checked ? 600 : 500,
-                whiteSpace: 'nowrap',
-              }}
-            />
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 24, maxWidth: 24, ml: 'auto', flexShrink: 0 }}>
-              {navItem.collapsible &&
-                (checked ? (
-                  <IconifyIcon icon="mingcute:up-fill" width={16} height={16} />
-                ) : (
-                  <IconifyIcon icon="mingcute:down-fill" width={16} height={16} />
-                ))}
-            </ListItemIcon>
+            {!isCollapsed && (
+              <>
+                <ListItemText
+                  primary={navItem.title}
+                  sx={{ 
+                    ml: -0.9, 
+                    flex: 1,
+                    display: isCollapsed ? 'none' : 'block',
+                  }}
+                  primaryTypographyProps={{
+                    fontSize: '0.875rem',
+                    fontWeight: checked ? 600 : 500,
+                    whiteSpace: 'nowrap',
+                  }}
+                />
+                <ListItemIcon sx={{ 
+                  color: 'inherit', 
+                  minWidth: 24, 
+                  maxWidth: 24, 
+                  ml: 'auto', 
+                  flexShrink: 0,
+                  display: isCollapsed ? 'none' : 'flex',
+                }}>
+                  {navItem.collapsible &&
+                    (checked ? (
+                      <IconifyIcon icon="mingcute:up-fill" width={16} height={16} />
+                    ) : (
+                      <IconifyIcon icon="mingcute:down-fill" width={16} height={16} />
+                    ))}
+                </ListItemIcon>
+              </>
+            )}
           </ListItemButton>
-          <Collapse in={checked}>
+          <Collapse in={checked && !isCollapsed}>
             <List sx={{ bgcolor: '#FFFFFF', borderRadius: '0 0 8px 8px', p: 0.5, pb: 0.5, mt: 0 }}>
               {navItem.sublist?.map((subListItem: any, idx: number) => (
                 <ListItem
@@ -246,29 +289,41 @@ const NavButton = ({ navItem, Link }: NavItemProps): ReactElement => {
           LinkComponent={Link}
           href={navItem.path}
           sx={{
-            backgroundColor: 'transparent',
+            backgroundColor: isCollapsed && isActive ? alpha('#FFFFFF', 0.15) : 'transparent',
             color: isActive ? '#FFFFFF' : alpha('#FFFFFF', 0.8),
             borderRadius: 2,
             overflow: 'hidden',
+            justifyContent: isCollapsed ? 'center' : 'flex-start',
+            px: isCollapsed ? 1 : 2,
+            py: isCollapsed ? 1.5 : 1.25,
+            minHeight: isCollapsed ? 48 : 'auto',
+            borderLeft: isCollapsed && isActive ? '4px solid #FFFFFF' : 'none',
+            cursor: 'pointer',
             '&:hover': {
-              backgroundColor: alpha('#FFFFFF', 0.1),
+              backgroundColor: isCollapsed ? (isActive ? alpha('#FFFFFF', 0.2) : alpha('#FFFFFF', 0.1)) : alpha('#FFFFFF', 0.1),
               color: '#FFFFFF',
             },
             transition: 'all 0.2s ease-in-out',
           }}
         >
-          <ListItemIcon sx={{ color: 'inherit', minWidth: 24, maxWidth: 24, mr: 0 }}>
+          <ListItemIcon sx={{ color: 'inherit', minWidth: isCollapsed ? 40 : 24, maxWidth: isCollapsed ? 40 : 24, mr: isCollapsed ? 0 : 0, justifyContent: 'center' }}>
             <IconifyIcon icon={navItem.icon as string} width={20} height={20} />
           </ListItemIcon>
-          <ListItemText
-            primary={navItem.title}
-            sx={{ ml: -0.5, flex: 1 }}
-            primaryTypographyProps={{
-              fontSize: '0.875rem',
-              fontWeight: isActive ? 600 : 500,
-              whiteSpace: 'nowrap',
-            }}
-          />
+          {!isCollapsed && (
+            <ListItemText
+              primary={navItem.title}
+              sx={{ 
+                ml: -0.5, 
+                flex: 1,
+                display: isCollapsed ? 'none' : 'block',
+              }}
+              primaryTypographyProps={{
+                fontSize: '0.875rem',
+                fontWeight: isActive ? 600 : 500,
+                whiteSpace: 'nowrap',
+              }}
+            />
+          )}
         </ListItemButton>
       )}
     </ListItem>

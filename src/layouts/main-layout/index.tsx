@@ -1,14 +1,29 @@
 import { PropsWithChildren, ReactElement, useState } from 'react';
-import { Box, Container, Drawer, Stack } from '@mui/material';
+import { Box, Container, Drawer, Stack, useTheme, useMediaQuery } from '@mui/material';
 
 import Sidebar from 'layouts/main-layout/Sidebar/Sidebar';
 import Topbar from 'layouts/main-layout/Topbar/Topbar';
+import { SidebarContext } from 'providers/SidebarProvider';
 
 export const drawerWidth = 340;
+export const drawerWidthCollapsed = 120;
 
 const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery('(max-width: 1280px)');
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  
+  // On small screens (≤1280px), default to collapsed, but can be toggled
+  // On mobile/tablet, when drawer is open, always show full sidebar
+  const isMobileOrTablet = useMediaQuery(theme.breakpoints.down('lg'));
+  const isCollapsed = isSmallScreen && !sidebarExpanded && !(isMobileOrTablet && mobileOpen);
+  const currentDrawerWidth = isCollapsed ? drawerWidthCollapsed : drawerWidth;
+  
+  const handleSidebarToggle = () => {
+    setSidebarExpanded(!sidebarExpanded);
+  };
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -43,7 +58,7 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
       >
         <Box
           component="nav"
-          sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
+          sx={{ width: { lg: currentDrawerWidth }, flexShrink: { lg: 0 } }}
           aria-label="mailbox folders"
         >
           <Drawer
@@ -63,7 +78,7 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
               },
             }}
           >
-            <Sidebar />
+            <Sidebar isCollapsed={isCollapsed} />
           </Drawer>
           <Drawer
             variant="permanent"
@@ -71,28 +86,35 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
               display: { xs: 'none', lg: 'block' },
               '& .MuiDrawer-paper': {
                 boxSizing: 'border-box',
-                width: drawerWidth,
+                width: currentDrawerWidth,
                 border: 0,
                 backgroundColor: 'background.default',
+                transition: 'width 0.3s ease-in-out',
               },
             }}
             open
           >
-            <Sidebar />
+            <Sidebar isCollapsed={isCollapsed} />
           </Drawer>
         </Box>
         <Stack
           direction="column"
           sx={{
             flexGrow: 1,
-            width: { lg: `calc(100% - ${drawerWidth}px)` },
+            width: { lg: `calc(100% - ${currentDrawerWidth}px)` },
             height: '100%',
             overflow: 'hidden',
             border: 'none',
             outline: 'none',
+            transition: 'width 0.3s ease-in-out',
           }}
         >
-          <Topbar handleDrawerToggle={handleDrawerToggle} />
+          <Topbar 
+            handleDrawerToggle={handleDrawerToggle} 
+            handleSidebarToggle={handleSidebarToggle}
+            isSidebarExpanded={sidebarExpanded}
+            isSmallScreen={isSmallScreen}
+          />
           <Box
             component="main"
             sx={{
@@ -119,7 +141,9 @@ const MainLayout = ({ children }: PropsWithChildren): ReactElement => {
                 boxSizing: 'border-box',
               }}
             >
-              {children}
+              <SidebarContext.Provider value={{ sidebarExpanded, isSmallScreen }}>
+                {children}
+              </SidebarContext.Provider>
             </Container>
           </Box>
         </Stack>

@@ -75,6 +75,10 @@ const mainLayoutRoutes: RouteObject[] = [
   
   // My Profile & Membership
   {
+    path: 'profile-membership',
+    element: <ComingSoon />,
+  },
+  {
     path: 'profile-membership/edit-profile',
     element: <Account />,
   },
@@ -105,6 +109,10 @@ const mainLayoutRoutes: RouteObject[] = [
   
   // Credentials & Recognition
   {
+    path: 'credentials-recognition',
+    element: <ComingSoon />,
+  },
+  {
     path: 'credentials-recognition/digital-badge',
     element: <Badges />,
   },
@@ -114,6 +122,10 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   
   // CPE & Learning
+  {
+    path: 'cpe-learning',
+    element: <ComingSoon />,
+  },
   {
     path: 'cpe-learning/cpe-compliance',
     element: <ComingSoon />,
@@ -141,6 +153,10 @@ const mainLayoutRoutes: RouteObject[] = [
   
   // Payments & Credits
   {
+    path: 'payments-credits',
+    element: <ComingSoon />,
+  },
+  {
     path: 'payments-credits/my-payments',
     element: <ComingSoon />,
   },
@@ -155,6 +171,10 @@ const mainLayoutRoutes: RouteObject[] = [
   
   // Facilities & Services
   {
+    path: 'facilities-services',
+    element: <ComingSoon />,
+  },
+  {
     path: 'facilities-services/facilities-booking',
     element: <ComingSoon />,
   },
@@ -168,6 +188,10 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   
   // Support & Community
+  {
+    path: 'support-community',
+    element: <ComingSoon />,
+  },
   {
     path: 'support-community/isca-cares',
     element: <ComingSoon />,

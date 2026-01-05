@@ -7,6 +7,7 @@ import {
   Stack,
   TextField,
   Toolbar,
+  useMediaQuery,
 } from '@mui/material';
 import IconifyIcon from 'components/base/IconifyIcon';
 // import AccountDropdown from './AccountDropdown';
@@ -15,9 +16,20 @@ import logo from 'assets/logo/elegent-favicon-logo.png';
 
 interface TopbarProps {
   handleDrawerToggle: MouseEventHandler;
+  handleSidebarToggle?: MouseEventHandler;
+  isSidebarExpanded?: boolean;
+  isSmallScreen?: boolean;
 }
 
-const Topbar = ({ handleDrawerToggle }: TopbarProps): ReactElement => {
+const Topbar = ({ 
+  handleDrawerToggle, 
+  handleSidebarToggle,
+  isSidebarExpanded = false,
+  isSmallScreen = false,
+}: TopbarProps): ReactElement => {
+  const isSmallScreenCheck = useMediaQuery('(max-width: 1280px)');
+  const showToggleButton = (isSmallScreen || isSmallScreenCheck) && handleSidebarToggle;
+  
   return (
     <AppBar
       position="relative"
@@ -40,6 +52,30 @@ const Topbar = ({ handleDrawerToggle }: TopbarProps): ReactElement => {
               <Image src={logo} width={1} height={1} />
             </IconButton>
           </Stack>
+          {/* Sidebar Toggle Button for Desktop (1280px and below) - Show on laptop and desktop */}
+          {showToggleButton && (
+            <IconButton 
+              sx={{ 
+                p: 1.25,
+                backgroundColor: 'rgba(0, 0, 0, 0.05)',
+                borderRadius: 1.5,
+                color: 'text.primary',
+                mr: 2,
+                display: { xs: 'none', sm: 'none', md: 'none', lg: 'flex' },
+                '&:hover': {
+                  backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                },
+              }} 
+              onClick={handleSidebarToggle}
+              aria-label="Toggle sidebar"
+            >
+              <IconifyIcon 
+                icon={isSidebarExpanded ? "mdi:menu-open" : "mdi:menu"} 
+                width={24} 
+                height={24} 
+              />
+            </IconButton>
+          )}
           <Stack
             display={{ xs: 'none', lg: 'flex' }}
             direction="row"

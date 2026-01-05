@@ -16,7 +16,14 @@ import navItems from 'data/nav-items';
 import NavButton from './NavButton';
 import ProfileDropdown from './ProfileDropdown';
 
-const Sidebar = (): ReactElement => {
+interface SidebarProps {
+  isCollapsed?: boolean;
+}
+
+const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
+  const collapsedWidth = 80;
+  const expandedWidth = 300;
+
   return (
     <Stack
       justifyContent="space-between"
@@ -30,8 +37,9 @@ const Sidebar = (): ReactElement => {
         '&:hover': {
           overflowY: 'auto',
         },
-        width: 300,
+        width: isCollapsed ? collapsedWidth : expandedWidth,
         bgcolor: '#265EAC',
+        transition: 'width 0.3s ease-in-out',
       }}
     >
       <Stack
@@ -54,8 +62,8 @@ const Sidebar = (): ReactElement => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              width: 'calc(100% - 32px)',
-              mx: 2,
+              width: isCollapsed ? 'calc(100% - 16px)' : 'calc(100% - 32px)',
+              mx: isCollapsed ? 1 : 2,
               bgcolor: '#FFFFFF',
               borderRadius: 2,
               boxShadow: (theme) => theme.shadows[3],
@@ -67,12 +75,12 @@ const Sidebar = (): ReactElement => {
               },
             }}
           >
-            <Image src={logo} width={0.6} />
+            <Image src={logo} width={isCollapsed ? 0.4 : 0.6} />
           </Link>
         </Stack>
         
         {/* Profile Section */}
-        <ProfileDropdown />
+        <ProfileDropdown isCollapsed={isCollapsed} />
       </Stack>
       <Stack
         justifyContent="space-between"
@@ -82,13 +90,13 @@ const Sidebar = (): ReactElement => {
           '&:hover': {
             overflowY: 'auto',
           },
-          width: 300,
+          width: isCollapsed ? collapsedWidth : expandedWidth,
         }}
       >
         {/* Navigation Menu */}
         <List
           sx={{
-            px: 2,
+            px: isCollapsed ? 1 : 2,
             py: 1,
             flex: '1 1 auto',
             width: '100%',
@@ -98,14 +106,14 @@ const Sidebar = (): ReactElement => {
           }}
         >
           {navItems.map((navItem, index) => (
-            <NavButton key={index} navItem={navItem} Link={Link} />
+            <NavButton key={index} navItem={navItem} Link={Link} isCollapsed={isCollapsed} />
           ))}
         </List>
         
         {/* Logout Button */}
         <List
           sx={{
-            px: 2,
+            px: isCollapsed ? 1 : 2,
             pb: 2.5,
             pt: 1,
             width: '100%',
@@ -125,7 +133,8 @@ const Sidebar = (): ReactElement => {
                 color: '#000000',
                 borderRadius: 2,
                 py: 1.25,
-                px: 2,
+                px: isCollapsed ? 1 : 2,
+                justifyContent: isCollapsed ? 'center' : 'flex-start',
                 '&:hover': {
                   backgroundColor: '#FFFFFF',
                   color: '#000000',
@@ -135,16 +144,18 @@ const Sidebar = (): ReactElement => {
                 transition: 'all 0.2s ease-in-out',
               }}
             >
-              <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+              <ListItemIcon sx={{ color: 'inherit', minWidth: isCollapsed ? 0 : 40, justifyContent: 'center' }}>
                 <IconifyIcon icon="ri:logout-circle-line" width={20} height={20} />
               </ListItemIcon>
-              <ListItemText 
-                primary="Log out"
-                primaryTypographyProps={{
-                  fontWeight: 500,
-                  fontSize: '0.95rem',
-                }}
-              />
+              {!isCollapsed && (
+                <ListItemText 
+                  primary="Log out"
+                  primaryTypographyProps={{
+                    fontWeight: 500,
+                    fontSize: '0.95rem',
+                  }}
+                />
+              )}
             </ListItemButton>
           </ListItem>
         </List>
