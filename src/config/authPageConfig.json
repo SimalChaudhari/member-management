@@ -1,0 +1,80 @@
+{
+  "login": {
+    "leftPanel": {
+      "backgroundImage": "assets/login/ISC.jpg",
+      "imageOpacity": 0.3,
+      "icon": "building",
+      "greetingText": "Welcome to",
+      "mainText": "Institute of Singapore Chartered Accountants"
+    },
+    "title": "Hello!",
+    "subtitle": "Sign in to your account to continue",
+    "inputPlaceholder": "Enter your username or email address",
+    "passwordPlaceholder": "Password",
+    "buttonText": "Sign in",
+    "footerLinks": [
+      {
+        "text": "Forgot password?",
+        "href": "/authentication/forgot-password"
+      },
+      {
+        "type": "textWithLink",
+        "text": "Don't have account?",
+        "linkText": "Sign up",
+        "linkHref": "/authentication/sign-up"
+      },
+      {
+        "text": "Create a Corporate Account",
+        "href": "/authentication/sign-up?type=corporate"
+      }
+    ]
+  },
+  "forgotPassword": {
+    "leftPanel": {
+      "backgroundImage": "assets/login/Forgot.jpg",
+      "imageOpacity": 0.3,
+      "icon": "padlock",
+      "greetingText": "Reset Your Password",
+      "mainText": "Secure Access \nRecovery for Your ISCA Account"
+    },
+    "title": "Forgot Password?",
+    "subtitle": "Enter your details to reset your password",
+    "inputPlaceholder": "Enter your username or email address",
+    "buttonText": "Reset Password",
+    "footerLinks": [
+      {
+        "type": "textWithLink",
+        "text": "Remember your password?",
+        "linkText": "Sign In",
+        "linkHref": "/authentication/login"
+      },
+      {
+        "type": "textWithLink",
+        "text": "Don't have an account?",
+        "linkText": "Create one",
+        "linkHref": "/authentication/sign-up"
+      }
+    ]
+  },
+  "signUp": {
+    "leftPanel": {
+      "backgroundImage": "assets/login/sign.jpg",
+      "imageOpacity": 0.3,
+      "icon": "userPlus",
+      "greetingText": "Join ISCA Today",
+      "mainText": "Create Your Account"
+    },
+    "title": "Create Account",
+    "subtitle": "Join ISCA today and access our services",
+    "buttonText": "Create Account",
+    "footerLinks": [
+      {
+        "type": "textWithLink",
+        "text": "Already have an account?",
+        "linkText": "Sign In",
+        "linkHref": "/authentication/login"
+      }
+    ]
+  }
+}
+
