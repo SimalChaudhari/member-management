@@ -1,7 +1,9 @@
 import { ReactElement, MouseEvent, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Box,
+  CircularProgress,
   Divider,
   ListItemIcon,
   ListItemText,
@@ -13,29 +15,47 @@ import {
 
 import IconifyIcon from 'components/base/IconifyIcon';
 import profile from 'assets/profile/profile.jpg';
+import { useAuthProfile } from 'store/hooks';
+import { paths } from 'routes/paths';
 
 interface ProfileDropdownProps {
-  userName?: string;
-  userStatus?: string;
-  avatarSrc?: string;
   isCollapsed?: boolean;
 }
 
-const ProfileDropdown = ({
-  userName = 'Courtney Henry',
-  userStatus = 'Online',
-  avatarSrc = profile,
-  isCollapsed = false,
-}: ProfileDropdownProps): ReactElement => {
+const ProfileDropdown = ({ isCollapsed = false }: ProfileDropdownProps): ReactElement => {
+  const navigate = useNavigate();
+  const { profile: userProfile, loading, logout } = useAuthProfile();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+
+  const userName = userProfile?.name ?? 'User';
+  const userStatus = 'Online';
+  const avatarSrc = userProfile?.picture ?? profile;
 
   const handleProfileClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
+  const handleMenuClose = () => setAnchorEl(null);
+
+  const handleHome = () => {
+    handleMenuClose();
+    navigate(paths.home);
+  };
+
+  const handleProfile = () => {
+    handleMenuClose();
+    navigate(paths.profileMembership.editProfile);
+  };
+
+  const handleSettings = () => {
+    handleMenuClose();
+    navigate(paths.profileMembership.editProfile);
+  };
+
+  const handleLogout = () => {
+    handleMenuClose();
+    logout();
   };
 
   return (
@@ -59,9 +79,7 @@ const ProfileDropdown = ({
           bgcolor: 'rgba(255, 255, 255, 0.15)',
           transition: 'all 0.2s ease-in-out',
           borderRadius: 2,
-          '&:hover': {
-            bgcolor: 'rgba(255, 255, 255, 0.2)',
-          },
+          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.2)' },
         }}
       >
         <Box sx={{ position: 'relative', flexShrink: 0 }}>
@@ -90,31 +108,38 @@ const ProfileDropdown = ({
         {!isCollapsed && (
           <>
             <Stack sx={{ flex: 1, minWidth: 0 }}>
-              <Typography
-                variant="body1"
-                sx={{
-                  fontWeight: 600,
-                  color: '#FFFFFF',
-                  fontSize: '0.95rem',
-                  lineHeight: 1.3,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  mb: 0.25,
-                }}
-              >
-                {userName}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: 'rgba(255, 255, 255, 0.8)',
-                  fontSize: '0.8rem',
-                  fontWeight: 400,
-                }}
-              >
-                {userStatus}
-              </Typography>
+              {loading ? (
+                <Stack direction="row" alignItems="center" gap={1} sx={{ mb: 0.25 }}>
+                  <CircularProgress size={14} sx={{ color: 'rgba(255,255,255,0.8)' }} />
+                  <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.8rem' }}>
+                    Loading…
+                  </Typography>
+                </Stack>
+              ) : (
+                <>
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      fontWeight: 600,
+                      color: '#FFFFFF',
+                      fontSize: '0.95rem',
+                      lineHeight: 1.3,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      mb: 0.25,
+                    }}
+                  >
+                    {userName}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.8rem', fontWeight: 400 }}
+                  >
+                    {userStatus}
+                  </Typography>
+                </>
+              )}
             </Stack>
             <IconifyIcon
               icon="ion:chevron-down-outline"
@@ -136,9 +161,7 @@ const ProfileDropdown = ({
         anchorEl={anchorEl}
         open={open}
         onClose={handleMenuClose}
-        MenuListProps={{
-          'aria-labelledby': 'profile-menu-button',
-        }}
+        MenuListProps={{ 'aria-labelledby': 'profile-menu-button' }}
         transformOrigin={{ horizontal: 'left', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'left', vertical: 'bottom' }}
         sx={{
@@ -151,59 +174,30 @@ const ProfileDropdown = ({
           },
         }}
       >
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={handleHome}>
           <ListItemIcon>
             <IconifyIcon icon="ion:home-sharp" width={20} height={20} />
           </ListItemIcon>
-          <ListItemText
-            primary="Home"
-            primaryTypographyProps={{
-              fontSize: '0.95rem',
-              fontWeight: 500,
-            }}
-          />
+          <ListItemText primary="Home" primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }} />
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={handleProfile}>
           <ListItemIcon>
             <IconifyIcon icon="mdi:account-outline" width={20} height={20} />
           </ListItemIcon>
-          <ListItemText
-            primary="Profile"
-            primaryTypographyProps={{
-              fontSize: '0.95rem',
-              fontWeight: 500,
-            }}
-          />
+          <ListItemText primary="Profile" primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }} />
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
+        <MenuItem onClick={handleSettings}>
           <ListItemIcon>
             <IconifyIcon icon="material-symbols:settings" width={20} height={20} />
           </ListItemIcon>
-          <ListItemText
-            primary="Settings"
-            primaryTypographyProps={{
-              fontSize: '0.95rem',
-              fontWeight: 500,
-            }}
-          />
+          <ListItemText primary="Settings" primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }} />
         </MenuItem>
         <Divider />
-        <MenuItem
-          onClick={handleMenuClose}
-          disableRipple
-          disableTouchRipple
-          sx={{ color: 'error.main' }}
-        >
+        <MenuItem onClick={handleLogout} disableRipple disableTouchRipple sx={{ color: 'error.main' }}>
           <ListItemIcon>
             <IconifyIcon icon="ri:logout-circle-line" color="error.main" width={20} height={20} />
           </ListItemIcon>
-          <ListItemText
-            primary="Logout"
-            primaryTypographyProps={{
-              fontSize: '0.95rem',
-              fontWeight: 500,
-            }}
-          />
+          <ListItemText primary="Logout" primaryTypographyProps={{ fontSize: '0.95rem', fontWeight: 500 }} />
         </MenuItem>
       </Menu>
     </>
@@ -211,4 +205,3 @@ const ProfileDropdown = ({
 };
 
 export default ProfileDropdown;
-

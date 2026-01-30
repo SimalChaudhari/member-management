@@ -1,24 +1,16 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
+
+declare const process: { cwd(): string };
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 
-const getEnv = (): Record<string, string> => {
-  try {
-    const g = typeof globalThis !== 'undefined' ? globalThis as Record<string, unknown> : {};
-    const p = g.process as { env?: Record<string, string> } | undefined;
-    return p?.env ?? {};
-  } catch {
-    return {};
-  }
-};
-const env = getEnv();
-const SSO_BASE = env.VITE_SSO_BASE_URL ?? '';
-const SSO_APP_ID = env.VITE_SSO_APP_ID ?? '';
-const SSO_APP_SECRET = env.SSO_APP_SECRET ?? env.VITE_SSO_APP_SECRET ?? '';
-const TOKEN_URL = SSO_BASE ? `${SSO_BASE.replace(/\/$/, '')}/services/oauth2/token` : '';
+function ssoTokenProxyPlugin(env: Record<string, string>): import('vite').Plugin {
+  const SSO_BASE = env.VITE_SSO_BASE_URL ?? '';
+  const SSO_APP_ID = env.VITE_SSO_APP_ID ?? '';
+  const SSO_APP_SECRET = env.SSO_APP_SECRET ?? env.VITE_SSO_APP_SECRET ?? '';
+  const TOKEN_URL = SSO_BASE ? `${SSO_BASE.replace(/\/$/, '')}/services/oauth2/token` : '';
 
-function ssoTokenProxyPlugin(): import('vite').Plugin {
   return {
     name: 'sso-token-proxy',
     configureServer(server) {
@@ -75,12 +67,15 @@ function ssoTokenProxyPlugin(): import('vite').Plugin {
   };
 }
 
-export default defineConfig({
-  optimizeDeps: {
-    include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip'],
-  },
-  plugins: [tsconfigPaths(), react(), tailwindcss(), ssoTokenProxyPlugin()],
-  preview: { port: 5000 },
-  server: { host: '0.0.0.0', port: 3000 },
-  base: '/',
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  return {
+    optimizeDeps: {
+      include: ['@emotion/react', '@emotion/styled', '@mui/material/Tooltip'],
+    },
+    plugins: [tsconfigPaths(), react(), tailwindcss(), ssoTokenProxyPlugin(env)],
+    preview: { port: 5000 },
+    server: { host: '0.0.0.0', port: 3000 },
+    base: '/',
+  };
 });

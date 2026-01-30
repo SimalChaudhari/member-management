@@ -7,6 +7,7 @@ import Splash from 'components/loading/Splash';
 import { RedirectIfAuth } from 'components/auth/RedirectIfAuth';
 import { RequireAuth } from 'components/auth/RequireAuth';
 
+
 // Layout components
 const App = lazy(() => import('App'));
 const MainLayout = lazy(async () => {

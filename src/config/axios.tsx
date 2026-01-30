@@ -2,6 +2,10 @@ import axios from 'axios';
 import { getStoredAccessToken, clearSsoTokens } from 'services/sso';
 import { paths } from 'routes/paths';
 
+/**
+ * Shared axios instance for all API calls (Redux actions, components).
+ * Use: import axiosInstance from 'config/axios';
+ */
 const API_URL = 'https://eservices-isca--uat.sandbox.my.site.com';
 
 const axiosInstance = axios.create({

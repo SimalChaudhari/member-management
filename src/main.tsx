@@ -5,18 +5,18 @@ import { RouterProvider } from 'react-router-dom';
 import { theme } from './theme/theme.ts';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import BreakpointsProvider from 'providers/BreakpointsProvider.tsx';
+import { StoreProvider } from 'providers/StoreProvider';
 import router from 'routes/router.tsx';
-import { Provider } from 'react-redux';
-import store from 'store/Store.tsx';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Provider store={store}>
+    <StoreProvider>
       <ThemeProvider theme={theme}>
         <BreakpointsProvider>
           <CssBaseline />
           <RouterProvider router={router} />
         </BreakpointsProvider>
       </ThemeProvider>
-    </Provider>
+    </StoreProvider>
   </React.StrictMode>,
 );

@@ -1,34 +1,6 @@
-/**
- * OpenID Connect / OAuth2 SSO configuration.
- * Set VITE_SSO_* in .env (never commit .env). See docs/ENV.md.
- */
-const baseUrl = import.meta.env.VITE_SSO_BASE_URL ?? '';
-const clientId = import.meta.env.VITE_SSO_APP_ID ?? '';
-const clientSecret = import.meta.env.VITE_SSO_APP_SECRET ?? '';
-const redirectUri = import.meta.env.VITE_SSO_REDIRECT_URI ?? (typeof window !== 'undefined' ? `${window.location.origin}` : '');
+import { ssoConfig, type SsoTokenResponse } from 'config/sso';
 
-const ssoConfig = {
-  baseUrl,
-  clientId,
-  clientSecret,
-  redirectUri,
-  authorizeUrl: `${baseUrl}/services/oauth2/authorize`,
-  tokenUrl: `${baseUrl}/services/oauth2/token`,
-} as const;
-
-export type SsoTokenResponse = {
-  access_token: string;
-  refresh_token?: string;
-  sfdc_community_url?: string;
-  sfdc_community_id?: string;
-  signature?: string;
-  scope?: string;
-  id_token?: string;
-  instance_url?: string;
-  id?: string;
-  token_type?: string;
-  issued_at?: string;
-};
+export type { SsoTokenResponse };
 
 const TOKEN_STORAGE_KEY = 'sf_sso_token';
 const REFRESH_TOKEN_STORAGE_KEY = 'sf_sso_refresh_token';
@@ -49,6 +21,7 @@ export function getSsoAuthorizeUrl(): string {
     client_id: ssoConfig.clientId,
     redirect_uri: ssoConfig.redirectUri,
     response_type: 'code',
+    scope: 'openid',
   });
   return `${ssoConfig.authorizeUrl}?${params.toString()}`;
 }

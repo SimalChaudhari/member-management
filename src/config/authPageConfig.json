@@ -7,11 +7,10 @@
       "greetingText": "Welcome to",
       "mainText": "Institute of Singapore Chartered Accountants"
     },
-    "title": "Hello!",
-    "subtitle": "Sign in to your account to continue",
+    "title": "Welcome Back",
+    "subtitle": "Sign in to your ISCA member portal",
     "inputPlaceholder": "Enter your username or email address",
-    "passwordPlaceholder": "Password",
-    "buttonText": "Sign in",
+    "buttonText": "Sign In",
     "footerLinks": [
       {
         "text": "Forgot password?",

@@ -22,3 +22,5 @@ VITE_SSO_APP_SECRET=
 ```
 
 Fill in values from your identity provider’s app settings.
+
+**If you get `invalid_client_id`:** Use values without quotes or leading/trailing spaces in `.env`. Copy the Consumer Key exactly from Salesforce: Setup → App Manager → your Connected App → View (Consumer Key).

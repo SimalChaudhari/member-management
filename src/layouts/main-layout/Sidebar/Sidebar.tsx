@@ -13,6 +13,7 @@ import IconifyIcon from 'components/base/IconifyIcon';
 import logo from 'assets/logo/isca-.png';
 import Image from 'components/base/Image';
 import navItems from 'data/nav-items';
+import { useAuthProfile } from 'store/hooks';
 import NavButton from './NavButton';
 import ProfileDropdown from './ProfileDropdown';
 
@@ -21,6 +22,7 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
+  const { logout } = useAuthProfile();
   const collapsedWidth = 80;
   const expandedWidth = 300;
 
@@ -126,8 +128,7 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
             }}
           >
             <ListItemButton
-              LinkComponent={Link}
-              href="/"
+              onClick={logout}
               sx={{
                 bgcolor: '#FFFFFF',
                 color: '#000000',

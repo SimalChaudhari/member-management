@@ -3,10 +3,13 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { exchangeCodeForToken, fetchUserInfo, storeProfile, storeSsoTokens, type SsoTokenResponse } from 'services/sso';
 import { paths } from 'routes/paths';
 import PageLoader from 'components/loading/PageLoader';
+import { useAppDispatch } from 'store/hooks';
+import { setProfileFromStorage } from 'store/action/AuthActions';
 
 const App = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [exchanging, setExchanging] = useState(false);
   const exchangedRef = useRef(false);
 
@@ -24,6 +27,7 @@ const App = () => {
         try {
           const profile = await fetchUserInfo();
           storeProfile(profile);
+          dispatch(setProfileFromStorage(profile));
         } catch {}
         navigate(paths.home, { replace: true });
       })
@@ -31,7 +35,7 @@ const App = () => {
         navigate(paths.auth.login, { replace: true, state: { ssoError: err?.message ?? 'SSO sign-in failed' } });
       })
       .finally(() => setExchanging(false));
-  }, [code, navigate]);
+  }, [code, navigate, dispatch]);
 
   if (hasCode || exchanging) return <PageLoader />;
   return <Outlet />;
