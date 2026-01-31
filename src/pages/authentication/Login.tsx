@@ -29,7 +29,6 @@ import logo from 'assets/logo/isca-.png';
 import Image from 'components/base/Image';
 import AuthLayout from 'layouts/auth-layout';
 import authPageConfig from 'config/authPageConfig.json';
-import leftPanelImage from 'assets/authentication-banners/login.png';
 import {
   getSsoAuthorizeUrl,
   exchangeCodeForToken,
@@ -40,6 +39,7 @@ import {
 import { paths } from 'routes/paths';
 import { useAppDispatch } from 'store/hooks';
 import { setProfileFromStorage } from 'store/action/AuthActions';
+import logo2 from 'assets/login/login.png';
 
 const config = authPageConfig.login as {
   title: string;
@@ -152,9 +152,6 @@ const Login = (): ReactElement => {
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', maxWidth: 380, width: '100%' }}>
         <Typography variant="h3" sx={{ color: '#000', fontWeight: 700, fontSize: { xs: '1.75rem', sm: '2rem', md: '2.25rem' } }}>
           {config.title}
-        </Typography>
-        <Typography variant="body1" sx={{ fontWeight: 400, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-          {config.subtitle}
         </Typography>
       </Box>
 
@@ -450,7 +447,7 @@ const Login = (): ReactElement => {
                 width: { md: '42%' },
                 minWidth: 280,
                 position: 'relative',
-                backgroundImage: `url(${leftPanelImage})`,
+                backgroundImage: `url(${logo2})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 display: { xs: 'none', md: 'flex' },

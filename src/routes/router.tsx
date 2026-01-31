@@ -1,21 +1,25 @@
 import { Suspense, lazy } from 'react';
 import { Navigate, Outlet, RouteObject, createBrowserRouter } from 'react-router-dom';
 
-import { paths, rootPaths } from './paths';
+import { paths, rootPaths, routePaths } from './paths';
 import PageLoader from '../components/loading/PageLoader';
 import Splash from 'components/loading/Splash';
 import { RedirectIfAuth } from 'components/auth/RedirectIfAuth';
 import { RequireAuth } from 'components/auth/RequireAuth';
 
+// ============================================================================
+// LAYOUT COMPONENTS
+// ============================================================================
 
-// Layout components
 const App = lazy(() => import('App'));
+
 const MainLayout = lazy(async () => {
   return Promise.all([
     import('layouts/main-layout'),
     new Promise((resolve) => setTimeout(resolve, 1000)),
   ]).then(([moduleExports]) => moduleExports);
 });
+
 const AuthLayout = lazy(async () => {
   return Promise.all([
     import('layouts/auth-layout'),
@@ -23,11 +27,9 @@ const AuthLayout = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
-// Page components
-const Error404 = lazy(async () => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-  return import('pages/errors/Error404');
-});
+// ============================================================================
+// PAGE COMPONENTS
+// ============================================================================
 
 const Sales = lazy(async () => {
   return Promise.all([
@@ -62,170 +64,157 @@ const ComingSoon = lazy(async () => {
   return import('pages/ComingSoon');
 });
 
-// Authentication pages
 const Login = lazy(async () => import('pages/authentication/Login'));
 const SignUp = lazy(async () => import('pages/authentication/SignUp'));
 const ResetPassword = lazy(async () => import('pages/authentication/ResetPassword'));
 const ForgotPassword = lazy(async () => import('pages/authentication/ForgotPassword'));
 
-// Main layout routes
+// ============================================================================
+// ROUTE CONFIGURATIONS
+// ============================================================================
+
 const mainLayoutRoutes: RouteObject[] = [
-  // Dashboard
   {
     index: true,
     element: <Sales />,
   },
-  
-  // My Profile & Membership
   {
-    path: 'profile-membership',
+    path: routePaths.profileMembership,
     element: <ComingSoon />,
   },
   {
-    path: 'profile-membership/edit-profile',
+    path: routePaths.editProfile,
     element: <Account />,
   },
   {
-    path: 'profile-membership/change-password',
+    path: routePaths.changePassword,
     element: <ComingSoon />,
   },
   {
-    path: 'profile-membership/membership-renewal',
+    path: routePaths.membershipRenewal,
     element: <ComingSoon />,
   },
   {
-    path: 'profile-membership/my-membership',
+    path: routePaths.myMembership,
     element: <ComingSoon />,
   },
   {
-    path: 'profile-membership/membership-application',
+    path: routePaths.membershipApplication,
     element: <ComingSoon />,
   },
   {
-    path: 'profile-membership/membership-requests/letter-of-good-standing',
+    path: routePaths.letterOfGoodStanding,
     element: <ComingSoon />,
   },
   {
-    path: 'profile-membership/membership-requests/reprint-membership-certificate',
-    element: <ComingSoon />,
-  },
-  
-  // Credentials & Recognition
-  {
-    path: 'credentials-recognition',
+    path: routePaths.reprintCertificate,
     element: <ComingSoon />,
   },
   {
-    path: 'credentials-recognition/digital-badge',
+    path: routePaths.credentialsRecognition,
+    element: <ComingSoon />,
+  },
+  {
+    path: routePaths.digitalBadge,
     element: <Badges />,
   },
   {
-    path: 'credentials-recognition/my-certificates',
-    element: <ComingSoon />,
-  },
-  
-  // CPE & Learning
-  {
-    path: 'cpe-learning',
+    path: routePaths.myCertificates,
     element: <ComingSoon />,
   },
   {
-    path: 'cpe-learning/cpe-compliance',
+    path: routePaths.cpeLearning,
     element: <ComingSoon />,
   },
   {
-    path: 'cpe-learning/my-cpe-records',
+    path: routePaths.cpeCompliance,
     element: <ComingSoon />,
   },
   {
-    path: 'cpe-learning/browse-courses-events',
+    path: routePaths.myCpeRecords,
     element: <ComingSoon />,
   },
   {
-    path: 'cpe-learning/my-events/registrations',
+    path: routePaths.browseCoursesEvents,
     element: <ComingSoon />,
   },
   {
-    path: 'cpe-learning/my-events/agm-registrations',
+    path: routePaths.eventRegistrations,
     element: <ComingSoon />,
   },
   {
-    path: 'cpe-learning/pq-portal',
-    element: <ComingSoon />,
-  },
-  
-  // Payments & Credits
-  {
-    path: 'payments-credits',
+    path: routePaths.agmRegistrations,
     element: <ComingSoon />,
   },
   {
-    path: 'payments-credits/my-payments',
+    path: routePaths.pqPortal,
     element: <ComingSoon />,
   },
   {
-    path: 'payments-credits/my-vouchers',
+    path: routePaths.paymentsCredits,
     element: <ComingSoon />,
   },
   {
-    path: 'payments-credits/prepaid-balance',
-    element: <ComingSoon />,
-  },
-  
-  // Facilities & Services
-  {
-    path: 'facilities-services',
+    path: routePaths.myPayments,
     element: <ComingSoon />,
   },
   {
-    path: 'facilities-services/facilities-booking',
+    path: routePaths.myVouchers,
     element: <ComingSoon />,
   },
   {
-    path: 'facilities-services/my-facilities-booking',
+    path: routePaths.prepaidBalance,
     element: <ComingSoon />,
   },
   {
-    path: 'facilities-services/iscaccountify',
-    element: <ComingSoon />,
-  },
-  
-  // Support & Community
-  {
-    path: 'support-community',
+    path: routePaths.facilitiesServices,
     element: <ComingSoon />,
   },
   {
-    path: 'support-community/isca-cares',
+    path: routePaths.facilitiesBooking,
     element: <ComingSoon />,
   },
   {
-    path: 'support-community/contact-us',
+    path: routePaths.myFacilitiesBooking,
+    element: <ComingSoon />,
+  },
+  {
+    path: routePaths.iscaccountify,
+    element: <ComingSoon />,
+  },
+  {
+    path: routePaths.supportCommunity,
+    element: <ComingSoon />,
+  },
+  {
+    path: routePaths.iscaCares,
+    element: <ComingSoon />,
+  },
+  {
+    path: routePaths.contactUs,
     element: <Contact />,
   },
 ];
 
-// Authentication routes
 const authRoutes: RouteObject[] = [
   {
-    path: 'login',
+    path: routePaths.login,
     element: <Login />,
   },
   {
-    path: 'sign-up',
+    path: routePaths.signup,
     element: <SignUp />,
   },
   {
-    path: 'reset-password',
+    path: routePaths.resetPassword,
     element: <ResetPassword />,
   },
   {
-    path: 'forgot-password',
+    path: routePaths.forgotPassword,
     element: <ForgotPassword />,
   },
 ];
 
-// Root routes configuration
 const routes: RouteObject[] = [
   {
     element: (

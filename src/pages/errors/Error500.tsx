@@ -34,7 +34,7 @@ const Error500 = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => navigate(paths.HOME)}
+          onClick={() => navigate(paths.home)}
           sx={{ mt: 3 }}
         >
           Go to Home
