@@ -45,6 +45,13 @@ const Account = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
+const ChangePassword = lazy(async () => {
+  return Promise.all([
+    import('pages/settings/ChangePassword'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
 const Contact = lazy(async () => {
   return Promise.all([
     import('pages/settings/Contact'),
@@ -55,6 +62,13 @@ const Contact = lazy(async () => {
 const Badges = lazy(async () => {
   return Promise.all([
     import('pages/settings/Badges'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const MyMembership = lazy(async () => {
+  return Promise.all([
+    import('pages/settings/MyMembership'),
     new Promise((resolve) => setTimeout(resolve, 500)),
   ]).then(([moduleExports]) => moduleExports);
 });
@@ -88,7 +102,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.changePassword,
-    element: <ComingSoon />,
+    element: <ChangePassword />,
   },
   {
     path: routePaths.membershipRenewal,
@@ -96,7 +110,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.myMembership,
-    element: <ComingSoon />,
+    element: <MyMembership />,
   },
   {
     path: routePaths.membershipApplication,
