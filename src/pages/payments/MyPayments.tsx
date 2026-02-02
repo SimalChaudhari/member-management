@@ -173,17 +173,17 @@ const MyPayments = (): ReactElement => {
   return (
     <div style={{ backgroundColor: appColors.background.page }}>
       <h1
-        className="text-xl font-bold pt-8 ml-6 mb-6"
+        className="text-xl font-bold pt-4 px-2 sm:pt-8 sm:px-0 sm:ml-6 mb-4 sm:mb-6"
         style={{ color: appColors.text.primary }}
       >
         My Payments
       </h1>
 
-      <div className="ml-6 mr-6">
-        <div className="rounded-lg shadow mb-6" style={{ backgroundColor: appColors.background.card }}>
+      <div className="px-2 sm:px-0 sm:ml-6 sm:mr-6">
+        <div className="rounded-lg shadow mb-4 sm:mb-6 overflow-hidden" style={{ backgroundColor: appColors.background.card }}>
           {/* Header with sidebar matching blue background */}
           <div
-            className="px-6 py-4 rounded-t-lg"
+            className="px-3 py-3 sm:px-6 sm:py-4 rounded-t-lg"
             style={{
               backgroundColor: appColors.header.background,
               color: appColors.header.text,
@@ -193,7 +193,7 @@ const MyPayments = (): ReactElement => {
           </div>
           
           {/* Content */}
-          <div className="p-6">
+          <div className="p-2 sm:p-6">
             {error ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800 text-sm">{error}</p>

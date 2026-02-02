@@ -19,6 +19,7 @@ import { ReactElement, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchMembershipHistory } from 'store/action/MembershipActions';
 import DataTable, { Column } from 'components/table/DataTable';
+import PageLoader from 'components/loading/PageLoader';
 import { appColors } from 'config/appColors';
 import type { MembershipApplicationRecord, MembershipApplicationColumn } from 'store/types/membership';
 
@@ -162,20 +163,24 @@ const MembershipApplication = (): ReactElement => {
     return historyData?.data || [];
   }, [historyData]);
 
+  if (historyLoading) {
+    return <PageLoader />;
+  }
+
   return (
     <div style={{ backgroundColor: appColors.background.page }}>
       <h1
-        className="text-xl font-bold pt-8 ml-6 mb-6"
+        className="text-xl font-bold pt-4 px-2 sm:pt-8 sm:px-0 sm:ml-6 mb-4 sm:mb-6"
         style={{ color: appColors.text.primary }}
       >
         Membership Application
       </h1>
 
-      <div className="ml-6 mr-6">
-        <div className="rounded-lg shadow mb-6" style={{ backgroundColor: appColors.background.card }}>
+      <div className="px-2 sm:px-0 sm:ml-6 sm:mr-6">
+        <div className="rounded-lg shadow mb-4 sm:mb-6 overflow-hidden" style={{ backgroundColor: appColors.background.card }}>
           {/* Header with sidebar matching blue background */}
           <div
-            className="px-6 py-4 rounded-t-lg"
+            className="px-3 py-3 sm:px-6 sm:py-4 rounded-t-lg"
             style={{
               backgroundColor: appColors.header.background,
               color: appColors.header.text,
@@ -185,12 +190,8 @@ const MembershipApplication = (): ReactElement => {
           </div>
           
           {/* Content */}
-          <div className="p-6">
-            {historyLoading ? (
-              <div className="flex items-center justify-center py-12">
-                <div style={{ color: appColors.text.secondary }}>Loading applications...</div>
-              </div>
-            ) : historyError ? (
+          <div className="p-2 sm:p-6">
+            {historyError ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800 text-sm">{historyError}</p>
               </div>
