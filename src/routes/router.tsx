@@ -38,16 +38,51 @@ const Sales = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
-const Account = lazy(async () => {
+const EditProfile = lazy(async () => {
   return Promise.all([
-    import('pages/settings/Account'),
+    import('pages/profile-membership/EditProfile'),
     new Promise((resolve) => setTimeout(resolve, 500)),
   ]).then(([moduleExports]) => moduleExports);
 });
 
 const ChangePassword = lazy(async () => {
   return Promise.all([
-    import('pages/settings/ChangePassword'),
+    import('pages/profile-membership/ChangePassword'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const MyMembership = lazy(async () => {
+  return Promise.all([
+    import('pages/profile-membership/MyMembership'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const MembershipApplication = lazy(async () => {
+  return Promise.all([
+    import('pages/profile-membership/MembershipApplication'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const MyPayments = lazy(async () => {
+  return Promise.all([
+    import('pages/payments/MyPayments'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const MyVouchers = lazy(async () => {
+  return Promise.all([
+    import('pages/payments/MyVouchers'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
+const MyCertificates = lazy(async () => {
+  return Promise.all([
+    import('pages/credentials-recognition/MyCertificates'),
     new Promise((resolve) => setTimeout(resolve, 500)),
   ]).then(([moduleExports]) => moduleExports);
 });
@@ -62,13 +97,6 @@ const Contact = lazy(async () => {
 const Badges = lazy(async () => {
   return Promise.all([
     import('pages/settings/Badges'),
-    new Promise((resolve) => setTimeout(resolve, 500)),
-  ]).then(([moduleExports]) => moduleExports);
-});
-
-const MyMembership = lazy(async () => {
-  return Promise.all([
-    import('pages/settings/MyMembership'),
     new Promise((resolve) => setTimeout(resolve, 500)),
   ]).then(([moduleExports]) => moduleExports);
 });
@@ -98,7 +126,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.editProfile,
-    element: <Account />,
+    element: <EditProfile />,
   },
   {
     path: routePaths.changePassword,
@@ -114,7 +142,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.membershipApplication,
-    element: <ComingSoon />,
+    element: <MembershipApplication />,
   },
   {
     path: routePaths.letterOfGoodStanding,
@@ -134,7 +162,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.myCertificates,
-    element: <ComingSoon />,
+    element: <MyCertificates />,
   },
   {
     path: routePaths.cpeLearning,
@@ -170,11 +198,11 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.myPayments,
-    element: <ComingSoon />,
+    element: <MyPayments />,
   },
   {
     path: routePaths.myVouchers,
-    element: <ComingSoon />,
+    element: <MyVouchers />,
   },
   {
     path: routePaths.prepaidBalance,

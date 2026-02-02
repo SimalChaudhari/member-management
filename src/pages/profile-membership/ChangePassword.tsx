@@ -1,3 +1,23 @@
+/**
+ * ============================================================================
+ * PROFILE & MEMBERSHIP MODULE - Change Password Page
+ * ============================================================================
+ * 
+ * This component allows users to change their account password with comprehensive
+ * validation and password requirements.
+ * 
+ * Features:
+ * - Password validation (8-15 characters, uppercase, lowercase, numbers, special chars)
+ * - Real-time password requirement feedback
+ * - Password visibility toggle
+ * - API integration for password change
+ * 
+ * Related Files:
+ * - store/action/ChangePasswordActions.tsx: Password change API integration
+ * - store/types/auth.ts: User profile types
+ * ============================================================================
+ */
+
 import { ReactElement, useState } from 'react';
 import { useAppSelector } from 'store/hooks';
 import { changePasswordAPI } from 'store/action/ChangePasswordActions';

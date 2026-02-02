@@ -159,7 +159,7 @@ const DataTable = <T extends Record<string, any>>({
         icon={sortDirection === 'asc' ? 'mdi:chevron-up' : 'mdi:chevron-down'}
         width={16}
         height={16}
-        color="#FFFFFF"
+        color="#374151"
         className="opacity-100"
       />
     );
@@ -171,14 +171,16 @@ const DataTable = <T extends Record<string, any>>({
     >
       {/* Custom Header with Title and Search/Filter */}
       {showHeader && (title || showSearch || showFilters) && (
-        <div className="title-header text-white px-4 sm:px-6 py-4 rounded-t-2xl">
+        <div className="bg-gray-800 text-white px-4 sm:px-6 py-4 rounded-t-2xl">
           <div
             className={`flex flex-col lg:flex-row lg:items-center gap-4 ${
               headerLayout === 'center'
                 ? 'lg:justify-center'
                 : headerLayout === 'right'
                 ? 'lg:justify-end'
-                : 'lg:justify-between'
+                : title
+                ? 'lg:justify-between'
+                : 'lg:justify-end'
             }`}
           >
             {/* Title */}
@@ -190,7 +192,7 @@ const DataTable = <T extends Record<string, any>>({
 
             {/* Search and Filters */}
             {(showSearch || showFilters) && (
-              <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
+              <div className="flex flex-col sm:flex-row gap-3 sm:items-center ml-auto">
                 {showSearch && (
                   <div className="relative">
                     <input
@@ -223,7 +225,7 @@ const DataTable = <T extends Record<string, any>>({
                           }));
                           setPage(0);
                         }}
-                        className="rounded-lg px-3 py-2 text-xs border title-header text-white border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                        className="rounded-lg px-3 py-2 text-xs border bg-gray-700 text-white border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
                       >
                         <option value="">All {filter.label}</option>
                         {filter.options.map((option) => (
@@ -248,12 +250,12 @@ const DataTable = <T extends Record<string, any>>({
       >
         <table className="min-w-full w-full text-sm">
           <thead>
-            <tr className={`bg-red-table-header-color sticky top-0 z-10 ${headerClassName}`}>
+            <tr className={`bg-gray-100 sticky top-0 z-10 border-b border-gray-300 ${headerClassName}`}>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className={`px-3 sm:px-5 py-3 sm:py-5 text-left font-semibold text-white text-xs sm:text-sm ${
-                    column.sortable ? 'cursor-pointer transition-colors duration-200 group' : ''
+                  className={`px-3 sm:px-5 py-3 sm:py-5 text-left font-semibold text-gray-700 text-xs sm:text-sm ${
+                    column.sortable ? 'cursor-pointer transition-colors duration-200 group hover:bg-gray-200' : ''
                   }`}
                   style={{ width: column.width }}
                   onClick={() => column.sortable && handleSort(column.key)}

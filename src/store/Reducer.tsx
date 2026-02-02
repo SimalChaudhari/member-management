@@ -5,6 +5,9 @@ import AuthReducer from './reducer/AuthReducer';
 import ProfileMetadataReducer from './reducer/ProfileMetadataReducer';
 import AccountDataReducer from './reducer/AccountDataReducer';
 import MembershipReducer from './reducer/MembershipReducer';
+import MyPaymentsReducer from './reducer/MyPaymentsReducer';
+import MyVouchersReducer from './reducer/MyVouchersReducer';
+import MyCertificatesReducer from './reducer/MyCertificatesReducer';
 
 const reducer = combineReducers({
   payments: PaymentsReducer,
@@ -13,6 +16,9 @@ const reducer = combineReducers({
   profileMetadata: ProfileMetadataReducer,
   accountData: AccountDataReducer,
   membership: MembershipReducer,
+  myPayments: MyPaymentsReducer,
+  myVouchers: MyVouchersReducer,
+  myCertificates: MyCertificatesReducer,
 });
 
 export default reducer;

@@ -1,4 +1,4 @@
-import { ReactElement, MouseEvent, useState } from 'react';
+import { ReactElement, MouseEvent, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
@@ -15,7 +15,8 @@ import {
 
 import IconifyIcon from 'components/base/IconifyIcon';
 import profile from 'assets/profile/profile.jpg';
-import { useAuthProfile } from 'store/hooks';
+import { useAuthProfile, useAppDispatch } from 'store/hooks';
+import { fetchUserInfoFromMobileApi } from 'store/action/AuthActions';
 import { paths } from 'routes/paths';
 
 interface ProfileDropdownProps {
@@ -24,12 +25,23 @@ interface ProfileDropdownProps {
 
 const ProfileDropdown = ({ isCollapsed = false }: ProfileDropdownProps): ReactElement => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { profile: userProfile, loading, logout } = useAuthProfile();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const userName = userProfile?.name ?? 'User';
-  const userStatus = 'Online';
+  // Fetch user info from mobileapi endpoint on mount
+  useEffect(() => {
+    if (userProfile && !userProfile.FullName) {
+      // Only fetch if we don't already have the mobileapi data
+      dispatch(fetchUserInfoFromMobileApi());
+    }
+  }, [dispatch, userProfile]);
+
+  // Use FullName from API if available, otherwise fallback to name
+  const userName = userProfile?.FullName || userProfile?.name || 'User'
+  const userEmail = userProfile?.email || '';
+
   const avatarSrc = userProfile?.picture ?? profile;
 
   const handleProfileClick = (event: MouseEvent<HTMLElement>) => {
@@ -136,7 +148,7 @@ const ProfileDropdown = ({ isCollapsed = false }: ProfileDropdownProps): ReactEl
                     variant="body2"
                     sx={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '0.8rem', fontWeight: 400 }}
                   >
-                    {userStatus}
+                    {userEmail}
                   </Typography>
                 </>
               )}

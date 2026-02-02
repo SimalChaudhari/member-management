@@ -9,6 +9,36 @@ export type UserProfile = {
   preferred_username?: string;
   user_id?: string;
   sub?: string;
+  // Additional fields from mobileapi/v1/userInfo endpoint
+  UserType?: string;
+  UserId?: string;
+  ProfileId?: string;
+  OrgHasPersonAccounts?: boolean;
+  OrgDefaultCurrencyIsoCode?: string;
+  OrganizationName?: string;
+  OrganizationMultiCurrency?: boolean;
+  OrganizationId?: string;
+  Locale?: string;
+  LastDateLoggedIn?: string;
+  FullName?: string;
+  ErrorMessage?: string | null;
+};
+
+// API Response type for mobileapi/v1/userInfo
+export type UserInfoApiResponse = {
+  UserType: string;
+  UserId: string;
+  ProfileId: string;
+  OrgHasPersonAccounts: boolean;
+  OrgDefaultCurrencyIsoCode: string;
+  OrganizationName: string;
+  OrganizationMultiCurrency: boolean;
+  OrganizationId: string;
+  Locale: string;
+  LastDateLoggedIn: string;
+  FullName: string;
+  ErrorMessage: string | null;
+  Email: string;
 };
 
 export type AuthState = {
