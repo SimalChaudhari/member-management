@@ -87,6 +87,13 @@ const MyCertificates = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
+const EventRegistrations = lazy(async () => {
+  return Promise.all([
+    import('pages/cpe-learning/EventRegistrations'),
+    new Promise((resolve) => setTimeout(resolve, 500)),
+  ]).then(([moduleExports]) => moduleExports);
+});
+
 const Contact = lazy(async () => {
   return Promise.all([
     import('pages/settings/Contact'),
@@ -182,7 +189,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.eventRegistrations,
-    element: <ComingSoon />,
+    element: <EventRegistrations />,
   },
   {
     path: routePaths.agmRegistrations,

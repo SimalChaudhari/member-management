@@ -7,6 +7,7 @@ import MembershipReducer from './reducer/MembershipReducer';
 import MyPaymentsReducer from './reducer/MyPaymentsReducer';
 import MyVouchersReducer from './reducer/MyVouchersReducer';
 import MyCertificatesReducer from './reducer/MyCertificatesReducer';
+import CourseRegistrationReducer from './reducer/CourseRegistrationReducer';
 
 const reducer = combineReducers({
 
@@ -18,6 +19,7 @@ const reducer = combineReducers({
   myPayments: MyPaymentsReducer,
   myVouchers: MyVouchersReducer,
   myCertificates: MyCertificatesReducer,
+  courseRegistration: CourseRegistrationReducer,
 });
 
 export default reducer;

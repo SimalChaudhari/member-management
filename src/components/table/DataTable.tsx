@@ -7,6 +7,8 @@ export interface Column<T> {
   sortable?: boolean;
   render?: (value: any, row: T, index?: number) => React.ReactNode;
   width?: string;
+  /** When true, allows text to wrap to next line instead of truncating */
+  wrap?: boolean;
 }
 
 export interface DataTableProps<T> {
@@ -167,34 +169,27 @@ const DataTable = <T extends Record<string, any>>({
 
   return (
     <div
-      className={`w-full max-w-full mx-auto rounded-2xl shadow-2xl overflow-hidden bg-white/80 backdrop-blur ${className}`}
+      className={`w-full max-w-full rounded-none sm:rounded-lg shadow overflow-hidden bg-white border-0 sm:border border-gray-200 ${className}`}
     >
-      {/* Custom Header with Title and Search/Filter */}
+      {/* Single unified card: Header + Table + Pagination + Strip */}
       {showHeader && (title || showSearch || showFilters) && (
-        <div className="bg-gray-800 text-white px-4 sm:px-6 py-4 rounded-t-2xl">
+        <div className="px-2 py-2 sm:px-4 sm:py-3 border-b border-gray-200 bg-gray-50/50">
           <div
-            className={`flex flex-col lg:flex-row lg:items-center gap-4 ${
+            className={`flex flex-col gap-3 ${
               headerLayout === 'center'
-                ? 'lg:justify-center'
+                ? 'items-center'
                 : headerLayout === 'right'
-                ? 'lg:justify-end'
-                : title
-                ? 'lg:justify-between'
-                : 'lg:justify-end'
+                ? 'items-end'
+                : ''
             }`}
           >
-            {/* Title */}
             {title && (
-              <div className="flex-shrink-0">
-                <h2 className="text-xl sm:text-2xl font-bold text-white drop-shadow">{title}</h2>
-              </div>
+              <h2 className="text-base sm:text-lg font-semibold text-gray-800">{title}</h2>
             )}
-
-            {/* Search and Filters */}
             {(showSearch || showFilters) && (
-              <div className="flex flex-col sm:flex-row gap-3 sm:items-center ml-auto">
+              <div className="flex flex-col sm:flex-row gap-2 w-full max-w-full">
                 {showSearch && (
-                  <div className="relative">
+                  <div className="relative flex-1 min-w-0">
                     <input
                       type="text"
                       placeholder={searchPlaceholder}
@@ -203,35 +198,28 @@ const DataTable = <T extends Record<string, any>>({
                         setSearch(e.target.value);
                         setPage(0);
                       }}
-                      className="rounded-lg pl-10 pr-4 py-2 text-sm border bg-white text-black border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200 w-full sm:w-64"
+                      className="w-full rounded pl-8 pr-2 py-1.5 sm:py-2 text-sm border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <IconifyIcon icon="mdi:search" width={18} height={18} color="#6B7280" />
+                    <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                      <IconifyIcon icon="mdi:search" width={16} height={16} color="#6B7280" />
                     </div>
                   </div>
                 )}
-
                 {showFilters && filterOptions.length > 0 && (
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-xs text-white/90 font-medium">Filter by:</span>
+                  <div className="flex flex-wrap gap-2">
                     {filterOptions.map((filter) => (
                       <select
                         key={String(filter.key)}
                         value={filters[filter.key as string] || ''}
                         onChange={(e) => {
-                          setFilters((prev) => ({
-                            ...prev,
-                            [filter.key]: e.target.value,
-                          }));
+                          setFilters((prev) => ({ ...prev, [filter.key]: e.target.value }));
                           setPage(0);
                         }}
-                        className="rounded-lg px-3 py-2 text-xs border bg-gray-700 text-white border-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 focus:border-transparent transition-all duration-200"
+                        className="rounded px-2 py-1.5 sm:px-3 sm:py-2 text-sm border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-w-0 flex-1 sm:flex-initial"
                       >
                         <option value="">All {filter.label}</option>
-                        {filter.options.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
+                        {filter.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
                         ))}
                       </select>
                     ))}
@@ -243,25 +231,22 @@ const DataTable = <T extends Record<string, any>>({
         </div>
       )}
 
-      {/* Table Body */}
-      <div
-        className={`overflow-y-auto overflow-x-auto ${showHeader ? '' : 'rounded-t-2xl'}`}
-        style={{ maxHeight: '60vh' }}
-      >
+      {/* Table - scrollable on mobile */}
+      <div className="overflow-x-auto overflow-y-auto" style={{ maxHeight: 'min(60vh, 400px)' }}>
         <table className="min-w-full w-full text-sm">
           <thead>
-            <tr className={`bg-gray-100 sticky top-0 z-10 border-b border-gray-300 ${headerClassName}`}>
+            <tr className={`bg-gray-50 sticky top-0 z-10 border-b border-gray-200 ${headerClassName}`}>
               {columns.map((column) => (
                 <th
                   key={String(column.key)}
-                  className={`px-3 sm:px-5 py-3 sm:py-5 text-left font-semibold text-gray-700 text-xs sm:text-sm ${
+                  className={`px-2 sm:px-4 py-2 sm:py-3 text-left font-semibold text-gray-700 text-xs sm:text-sm ${
                     column.sortable ? 'cursor-pointer transition-colors duration-200 group hover:bg-gray-200' : ''
-                  }`}
+                  } ${column.wrap ? 'whitespace-normal break-words align-top' : ''}`}
                   style={{ width: column.width }}
                   onClick={() => column.sortable && handleSort(column.key)}
                 >
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <span className="truncate">{column.header}</span>
+                  <div className={`flex items-center gap-1 sm:gap-2 ${column.wrap ? 'flex-wrap' : ''}`}>
+                    <span className={column.wrap ? 'break-words whitespace-normal' : 'truncate'}>{column.header}</span>
                     {column.sortable && <SortIcon field={column.key} />}
                   </div>
                 </th>
@@ -271,7 +256,7 @@ const DataTable = <T extends Record<string, any>>({
           <tbody>
             {paginatedRows.length === 0 && (
               <tr>
-                <td colSpan={columns.length} className="text-center py-8 text-gray-400">
+                <td colSpan={columns.length} className="text-center py-4 sm:py-8 text-gray-400 text-xs sm:text-sm">
                   {emptyMessage}
                 </td>
               </tr>
@@ -279,23 +264,22 @@ const DataTable = <T extends Record<string, any>>({
             {paginatedRows.map((row, idx) => (
               <tr
                 key={idx}
-                className={`transition-all duration-500 ease-in-out ${
-                  idx % 2 === 0 ? 'bg-white/80' : 'bg-gray-100/60'
-                } hover:bg-indigo-50 animate-fadeIn ${rowClassName} ${
+                className={`transition-colors ${
+                  idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                } hover:bg-blue-50/50 ${rowClassName} ${
                   onRowClick ? 'cursor-pointer' : ''
                 }`}
-                style={{ animationDelay: `${idx * 60}ms` }}
                 onClick={() => onRowClick?.(row)}
               >
                 {columns.map((column) => (
                   <td
                     key={String(column.key)}
-                    className="px-2 sm:px-4 py-3 sm:py-4 text-xs sm:text-sm"
+                    className={`px-1 py-2 sm:px-4 sm:py-4 text-xs sm:text-sm ${column.wrap ? 'align-top' : ''}`}
                   >
                     {column.render ? (
                       column.render(row[column.key], row, idx)
                     ) : (
-                      <span className="truncate block">{row[column.key]}</span>
+                      <span className={column.wrap ? 'block break-words whitespace-normal' : 'truncate block'}>{row[column.key]}</span>
                     )}
                   </td>
                 ))}
@@ -305,95 +289,14 @@ const DataTable = <T extends Record<string, any>>({
         </table>
       </div>
 
-      {/* Pagination Controls - Inline layout for desktop */}
-      <div className="bg-gray-50/50 py-3 px-2 sm:px-4">
-        {/* Mobile layout - Stacked */}
-        <div className="block sm:hidden">
-          <div className="flex flex-col gap-3">
-            {/* Rows per page selector */}
-            <div className="flex items-center justify-center gap-2">
-              <span className="text-xs text-gray-700 font-medium whitespace-nowrap">
-                Rows per page:
-              </span>
-              <select
-                className="border border-gray-300 rounded-lg px-2 py-1 text-xs font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
-                value={pageSize}
-                onChange={(e) => {
-                  setPageSize(Number(e.target.value));
-                  setPage(0);
-                }}
-              >
-                {pageSizeOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Results info */}
-            <div className="text-center">
-              <span className="text-xs text-gray-600 font-medium">
-                Showing {page * pageSize + 1} to{' '}
-                {Math.min((page + 1) * pageSize, filteredAndSortedRows.length)} of{' '}
-                {filteredAndSortedRows.length} results
-              </span>
-            </div>
-
-            {/* Page info */}
-            <div className="text-center">
-              <span className="text-xs text-gray-700 font-medium">
-                Page {page + 1} of {totalPages}
-              </span>
-            </div>
-
-            {/* Navigation buttons */}
-            <div className="flex items-center justify-center gap-2">
-              <button
-                className="px-3 py-2 rounded-lg text-xs font-semibold bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={page === 0}
-              >
-                ← Prev
-              </button>
-
-              <div className="flex gap-1">
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                      page === i
-                        ? 'bg-blue-500 text-white shadow-md'
-                        : 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 shadow-sm hover:shadow-md'
-                    }`}
-                    onClick={() => setPage(i)}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-
-              <button
-                className="px-3 py-2 rounded-lg text-xs font-semibold bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
-                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-                disabled={page >= totalPages - 1}
-              >
-                Next →
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Desktop layout - Inline */}
-        <div className="hidden sm:flex sm:items-center sm:justify-between mt-10">
-          {/* Left side - Rows per page and Showing info */}
-          <div className="flex items-center gap-6">
+      {/* Pagination - single responsive layout */}
+      <div className="px-3 sm:px-4 py-3 border-t border-gray-200 bg-gray-50/30">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700 font-medium whitespace-nowrap">
-                Rows per page:
-              </span>
+              <span className="text-xs sm:text-sm text-gray-600 whitespace-nowrap">Rows:</span>
               <select
-                className="border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-all duration-200"
+                className="rounded-md px-2 py-1.5 text-xs sm:text-sm border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
@@ -401,74 +304,68 @@ const DataTable = <T extends Record<string, any>>({
                 }}
               >
                 {pageSizeOptions.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
+                  <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
             </div>
-
-            <span className="text-sm text-gray-600 font-medium">
-              Showing {page * pageSize + 1} to{' '}
-              {Math.min((page + 1) * pageSize, filteredAndSortedRows.length)} of{' '}
-              {filteredAndSortedRows.length} results
+            <span className="text-xs text-gray-600">
+              {page * pageSize + 1}-{Math.min((page + 1) * pageSize, filteredAndSortedRows.length)} of {filteredAndSortedRows.length}
             </span>
           </div>
-
-          {/* Right side - Page info and navigation */}
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-700 font-medium">
+          <div className="flex items-center justify-between sm:justify-end gap-2">
+            <span className="text-xs sm:text-sm text-gray-600 sm:mr-2">
               Page {page + 1} of {totalPages}
             </span>
-
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <button
-                className="px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                className="px-1.5 py-1 sm:px-3 sm:py-1.5 rounded text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
               >
-                ← Prev
+                Prev
               </button>
-              {/* Page numbers */}
-              <div className="flex gap-1">
-                {Array.from({ length: totalPages }, (_, i) => (
-                  <button
-                    key={i}
-                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                      page === i
-                        ? 'bg-blue-500 text-white shadow-md'
-                        : 'bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 shadow-sm hover:shadow-md'
-                    }`}
-                    onClick={() => setPage(i)}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
+              <div className="flex gap-0.5 sm:gap-1 overflow-x-auto">
+                {(() => {
+                  const maxVisible = 5;
+                  let start = Math.max(0, page - Math.floor(maxVisible / 2));
+                  let end = Math.min(totalPages, start + maxVisible);
+                  if (end - start < maxVisible) start = Math.max(0, end - maxVisible);
+                  return Array.from({ length: end - start }, (_, i) => start + i).map((i) => (
+                    <button
+                      key={i}
+                      className={`min-w-[24px] sm:min-w-[36px] px-1 py-1 sm:px-2 sm:py-1.5 rounded text-xs font-medium shrink-0 ${
+                        page === i ? 'bg-blue-600 text-white' : 'border border-gray-300 bg-white hover:bg-gray-50 text-gray-700'
+                      }`}
+                      onClick={() => setPage(i)}
+                    >
+                      {i + 1}
+                    </button>
+                  ));
+                })()}
               </div>
               <button
-                className="px-4 py-2 rounded-lg text-sm font-semibold bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow-md"
+                className="px-1.5 py-1 sm:px-3 sm:py-1.5 rounded text-xs font-medium border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page >= totalPages - 1}
               >
-                Next →
+                Next
               </button>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Animation keyframes */}
-      <style>
-        {`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px);}
-            to { opacity: 1; transform: translateY(0);}
-          }
-          .animate-fadeIn {
-            animation: fadeIn 0.5s both;
-          }
-        `}
-      </style>
+      {/* Bottom blue strip - same as DynamicDataGrid */}
+      <div
+        style={{
+          height: 4,
+          width: '100%',
+          backgroundColor: '#265EAC',
+          borderBottomLeftRadius: 8,
+          borderBottomRightRadius: 8,
+        }}
+        aria-hidden
+      />
     </div>
   );
 };
