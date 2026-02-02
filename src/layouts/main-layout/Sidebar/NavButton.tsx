@@ -18,19 +18,31 @@ interface NavItemProps {
   navItem: NavItem;
   Link: OverridableComponent<LinkTypeMap>;
   isCollapsed?: boolean;
+  isOpen?: boolean; // Controlled from parent
+  onToggle?: (currentState: boolean) => void; // Callback to parent
 }
 
-const NavButton = ({ navItem, Link, isCollapsed = false }: NavItemProps): ReactElement => {
+const NavButton = ({
+  navItem,
+  Link,
+  isCollapsed = false,
+  isOpen = false,
+  onToggle,
+}: NavItemProps): ReactElement => {
   const { pathname } = useLocation();
-  const [checked, setChecked] = useState(false);
   const [nestedChecked, setNestedChecked] = useState<boolean[]>([]);
+  
+  // Use controlled state from parent, fallback to local state if not provided
+  const checked = isOpen;
 
   useEffect(() => {
     if (pathname === '/') {
-      setChecked(false);
       setNestedChecked([]);
+      if (onToggle) {
+        onToggle(false);
+      }
     }
-  }, [pathname]);
+  }, [pathname, onToggle]);
 
   const handleNestedChecked = (index: any, value: boolean) => {
     const updatedBooleanArray = [...nestedChecked];
@@ -100,7 +112,9 @@ const NavButton = ({ navItem, Link, isCollapsed = false }: NavItemProps): ReactE
             onClick={() => {
               // Only toggle collapse when sidebar is expanded
               if (!isCollapsed) {
-                setChecked(!checked);
+                if (onToggle) {
+                  onToggle(checked);
+                }
               }
             }}
             sx={{
@@ -223,6 +237,12 @@ const NavButton = ({ navItem, Link, isCollapsed = false }: NavItemProps): ReactE
                                       nestedSubListItem.path
                                       : nestedSubListItem.path
                                   }
+                                  onClick={() => {
+                                    // Close the parent menu when a nested submenu item is clicked (optional)
+                                    // if (onToggle) {
+                                    //   onToggle(false);
+                                    // }
+                                  }}
                                   sx={{
                                     borderRadius: 2,
                                     mx: 1,
@@ -254,6 +274,12 @@ const NavButton = ({ navItem, Link, isCollapsed = false }: NavItemProps): ReactE
                     <ListItemButton
                       LinkComponent={Link}
                       href={navItem.path + '/' + subListItem.path}
+                      onClick={() => {
+                        // Close the parent menu when a submenu item is clicked (optional - can be removed if you want menu to stay open)
+                        // if (onToggle) {
+                        //   onToggle(false);
+                        // }
+                      }}
                       sx={{
                         borderRadius: 2,
                         backgroundColor: isSubmenuActive(subListItem) ? '#F5F5F5' : 'transparent',

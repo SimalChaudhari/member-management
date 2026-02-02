@@ -1,4 +1,5 @@
-import { ReactElement } from 'react';
+import { ReactElement, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Link,
   List,
@@ -23,8 +24,52 @@ interface SidebarProps {
 
 const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
   const { logout } = useAuthProfile();
+  const { pathname } = useLocation();
   const collapsedWidth = 80;
   const expandedWidth = 300;
+  
+  // Track which menu item is currently open (only one can be open at a time)
+  const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
+
+  /**
+   * Check if a menu item has an active submenu based on current pathname
+   */
+  const isMenuActive = (navItem: (typeof navItems)[number]): boolean => {
+    if (!navItem.sublist) return false;
+    return navItem.sublist.some(subItem =>
+      pathname === `${navItem.path}/${subItem.path}` ||
+      (subItem.sublist && subItem.sublist.some(nestedItem =>
+        pathname === `${navItem.path}/${subItem.path}/${nestedItem.path}`
+      ))
+    );
+  };
+
+  /**
+   * Auto-open menu if current path matches a submenu item
+   */
+  useEffect(() => {
+    if (!isCollapsed) {
+      const activeIndex = navItems.findIndex((item) => isMenuActive(item));
+      if (activeIndex !== -1) {
+        setOpenMenuIndex(activeIndex);
+      } else if (pathname === '/') {
+        setOpenMenuIndex(null);
+      }
+    }
+  }, [pathname, isCollapsed]);
+
+  /**
+   * Handle menu item click - close all other menus and toggle the clicked one
+   */
+  const handleMenuToggle = (index: number, currentState: boolean) => {
+    if (currentState) {
+      // If clicking the same menu that's open, close it
+      setOpenMenuIndex(null);
+    } else {
+      // Open the clicked menu and close all others
+      setOpenMenuIndex(index);
+    }
+  };
 
   return (
     <Stack
@@ -108,7 +153,14 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
           }}
         >
           {navItems.map((navItem, index) => (
-            <NavButton key={index} navItem={navItem} Link={Link} isCollapsed={isCollapsed} />
+            <NavButton
+              key={index}
+              navItem={navItem}
+              Link={Link}
+              isCollapsed={isCollapsed}
+              isOpen={openMenuIndex === index}
+              onToggle={(currentState) => handleMenuToggle(index, currentState)}
+            />
           ))}
         </List>
         
