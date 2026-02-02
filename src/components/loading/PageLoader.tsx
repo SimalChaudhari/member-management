@@ -16,6 +16,8 @@ const PageLoader = (props: StackOwnProps) => {
       }}
       {...props}
     >
+      <CircularProgress size={40} />
+
       <Typography variant="body1" color="text.secondary">
         Loading...
       </Typography>

@@ -25,6 +25,7 @@ import { fetchProfileMetadata } from 'store/action/ProfileMetadataActions';
 import { fetchAccountData } from 'store/action/AccountDataActions';
 import DynamicFormField from 'components/settings/DynamicFormField';
 import DataTable, { Column } from 'components/table/DataTable';
+import PageLoader from 'components/loading/PageLoader';
 import type { ProfileField, ContactSubSection, EmploymentHistoryRecord } from 'store/types/profileMetadata';
 
 /**
@@ -271,18 +272,18 @@ const EditProfile = (): ReactElement => {
     );
   };
 
-  // Show loading state (metadata or account data)
+  /**
+   * Loading State
+   * Show loader while fetching - prevents "No data available" flash when data is slow
+   */
   if (loading || accountLoading) {
-    return (
-      <div className="bg-white p-6">
-        <div className="text-center py-8">
-          <p className="text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
-  // Show error state
+  /**
+   * Error State
+   * Shows error message with retry button
+   */
   if (error || accountError) {
     return (
       <div className="bg-white p-6">
@@ -305,7 +306,10 @@ const EditProfile = (): ReactElement => {
     );
   }
 
-  // Show message if no metadata available
+  /**
+   * Empty State
+   * Only when fetch is done and no metadata - not during loading
+   */
   if (!metadata) {
     return (
       <div className="bg-white p-6">

@@ -17,6 +17,7 @@
 import { ReactElement, useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchMembershipDetail } from 'store/action/MembershipActions';
+import PageLoader from 'components/loading/PageLoader';
 import { appColors } from 'config/appColors';
 
 /**
@@ -96,21 +97,7 @@ const MyMembership = (): ReactElement => {
   // Removed column building and table data logic as it's not available yet
 
   if (loading) {
-    return (
-      <div style={{ backgroundColor: appColors.background.page }}>
-        <h1
-          className="text-xl font-bold pt-8 ml-6 mb-6"
-          style={{ color: appColors.text.primary }}
-        >
-          My Membership
-        </h1>
-        <div className="rounded-lg shadow p-6 mb-6 ml-6 mr-6" style={{ backgroundColor: appColors.background.card }}>
-          <div className="flex items-center justify-center py-12">
-            <div style={{ color: appColors.text.secondary }}>Loading membership details...</div>
-          </div>
-        </div>
-      </div>
-    );
+    return <PageLoader />;
   }
 
   if (error) {

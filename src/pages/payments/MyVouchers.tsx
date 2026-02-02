@@ -19,6 +19,7 @@ import { ReactElement, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchMyVouchers } from 'store/action/MyVouchersActions';
 import DataTable, { Column } from 'components/table/DataTable';
+import PageLoader from 'components/loading/PageLoader';
 import { appColors } from 'config/appColors';
 import type { VoucherRecord, VoucherColumn } from 'store/types/vouchers';
 
@@ -166,6 +167,10 @@ const MyVouchers = (): ReactElement => {
     return options;
   }, [statusFilterOptions, voucherTypeFilterOptions]);
 
+  if (loading) {
+    return <PageLoader />;
+  }
+
   return (
     <div style={{ backgroundColor: appColors.background.page }}>
       <h1
@@ -190,11 +195,7 @@ const MyVouchers = (): ReactElement => {
           
           {/* Content */}
           <div className="p-6">
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div style={{ color: appColors.text.secondary }}>Loading vouchers...</div>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800 text-sm">{error}</p>
               </div>

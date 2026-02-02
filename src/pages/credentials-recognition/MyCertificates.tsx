@@ -19,6 +19,7 @@ import { ReactElement, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchMyCertificates } from 'store/action/MyCertificatesActions';
 import DataTable, { Column } from 'components/table/DataTable';
+import PageLoader from 'components/loading/PageLoader';
 import { appColors } from 'config/appColors';
 import type { CertificateRecord, CertificateColumn } from 'store/types/certificates';
 
@@ -111,6 +112,10 @@ const MyCertificates = (): ReactElement => {
     return certificatesData || [];
   }, [certificatesData]);
 
+  if (loading) {
+    return <PageLoader />;
+  }
+
   return (
     <div style={{ backgroundColor: appColors.background.page }}>
       <h1
@@ -135,11 +140,7 @@ const MyCertificates = (): ReactElement => {
           
           {/* Content */}
           <div className="p-6">
-            {loading ? (
-              <div className="flex items-center justify-center py-12">
-                <div style={{ color: appColors.text.secondary }}>Loading certificates...</div>
-              </div>
-            ) : error ? (
+            {error ? (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4">
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
