@@ -6,7 +6,6 @@ import {
   FormControlLabel,
   IconButton,
   InputAdornment,
-  InputLabel,
   Link,
   Stack,
   Typography,
@@ -17,7 +16,6 @@ import {
   Alert,
   Zoom,
   Divider,
-  Chip,
   CircularProgress,
   OutlinedInput,
   Radio,
@@ -72,6 +70,7 @@ const Login = (): ReactElement => {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [ssoExchanging, setSsoExchanging] = useState(false);
   const [ssoError, setSsoError] = useState<string | null>(
     () => (location.state as { ssoError?: string } | null)?.ssoError ?? null
@@ -132,6 +131,7 @@ const Login = (): ReactElement => {
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
+      setIsSubmitted(true);
       const emailVal = validateEmail(email);
       const passwordVal = validatePassword(password);
       setEmailError(emailVal);
@@ -173,6 +173,10 @@ const Login = (): ReactElement => {
           width: '100%',
           maxWidth: 380,
           alignItems: 'center',
+          justifyContent: 'center',
+          mx: 'auto',
+          px: { xs: 2, sm: 3 },
+          py: 2,
         }}
       >
         <FormControl component="fieldset" fullWidth sx={{ maxWidth: 380, width: '100%' }}>
@@ -195,8 +199,12 @@ const Login = (): ReactElement => {
           </RadioGroup>
         </FormControl>
 
-        <FormControl variant="outlined" fullWidth sx={{ width: '100%', maxWidth: 380, boxSizing: 'border-box' }} error={!!emailError}>
-          <InputLabel htmlFor="email">{config.inputPlaceholder}</InputLabel>
+        <FormControl variant="outlined" fullWidth sx={{ width: '100%', maxWidth: 380, boxSizing: 'border-box', mx: 'auto' }} error={!!emailError && isSubmitted}>
+          {emailError && isSubmitted && (
+            <Typography variant="caption" color="error" sx={{ mb: 0.5, textAlign: 'left', width: '100%' }}>
+              {emailError}
+            </Typography>
+          )}
           <OutlinedInput
             id="email"
             inputRef={emailRef}
@@ -204,52 +212,82 @@ const Login = (): ReactElement => {
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
-              setEmailError(validateEmail(e.target.value));
+              // Only validate if form has been submitted
+              if (isSubmitted) {
+                setEmailError(validateEmail(e.target.value));
+              } else {
+                setEmailError('');
+              }
             }}
-            onBlur={() => setEmailError(validateEmail(email))}
-            label={config.inputPlaceholder}
+            onBlur={() => {
+              // Only validate on blur if form has been submitted
+              if (isSubmitted) {
+                setEmailError(validateEmail(email));
+              }
+            }}
             placeholder={config.inputPlaceholder}
             sx={{ width: '100%', boxSizing: 'border-box', borderRadius: 1 }}
           />
-          {emailError && (
-            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-              {emailError}
-            </Typography>
-          )}
         </FormControl>
 
-        <FormControl variant="outlined" fullWidth sx={{ width: '100%', maxWidth: 380, boxSizing: 'border-box' }} error={!!passwordError}>
-          <InputLabel htmlFor="password">Password</InputLabel>
+        <FormControl variant="outlined" fullWidth sx={{ width: '100%', maxWidth: 380, boxSizing: 'border-box', mx: 'auto' }} error={!!passwordError && isSubmitted}>
+          {passwordError && isSubmitted && (
+            <Typography variant="caption" color="error" sx={{ mb: 0.5, textAlign: 'left', width: '100%' }}>
+              {passwordError}
+            </Typography>
+          )}
           <OutlinedInput
             id="password"
             type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => {
               setPassword(e.target.value);
-              setPasswordError(validatePassword(e.target.value));
+              // Only validate if form has been submitted
+              if (isSubmitted) {
+                setPasswordError(validatePassword(e.target.value));
+              } else {
+                setPasswordError('');
+              }
             }}
-            onBlur={() => setPasswordError(validatePassword(password))}
-            label="Password"
-            placeholder="••••••••"
+            onBlur={() => {
+              // Only validate on blur if form has been submitted
+              if (isSubmitted) {
+                setPasswordError(validatePassword(password));
+              }
+            }}
+            placeholder="Password"
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
-                  aria-label="toggle password"
+                  aria-label="toggle password visibility"
                   onClick={() => setShowPassword(!showPassword)}
                   edge="end"
                   size="small"
+                  sx={{ 
+                    padding: '4px',
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                    }
+                  }}
                 >
-                  <IconifyIcon icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} width={20} height={20} />
+                  <IconifyIcon 
+                    icon={showPassword ? 'mdi:eye-off' : 'mdi:eye'} 
+                    width={20} 
+                    height={20} 
+                    color="#666"
+                  />
                 </IconButton>
               </InputAdornment>
             }
-            sx={{ width: '100%', boxSizing: 'border-box', borderRadius: 1 }}
+            sx={{ 
+              width: '100%', 
+              boxSizing: 'border-box', 
+              borderRadius: 1,
+              '& .MuiInputAdornment-root': {
+                marginRight: '4px',
+              }
+            }}
           />
-          {passwordError && (
-            <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-              {passwordError}
-            </Typography>
-          )}
         </FormControl>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" maxWidth={380} flexWrap="wrap" gap={1}>
@@ -263,8 +301,7 @@ const Login = (): ReactElement => {
             }
             label={<Typography variant="body2">Remember me</Typography>}
           />
-          <Chip label="Secure Login" size="small" color="success" variant="outlined" icon={<IconifyIcon icon="mdi:shield-check" width={14} height={14} />} />
-        </Stack>
+         </Stack>
 
         <Box sx={{ width: '100%', maxWidth: 380, boxSizing: 'border-box' }}>
           <Button
@@ -403,9 +440,9 @@ const Login = (): ReactElement => {
         justifyContent="center"
         gap={2}
         sx={{
-          p: { xs: 2, sm: 3, md: 4 },
           width: '100%',
           maxWidth: { xs: '100%', md: 1000 },
+          height: '100%',
           mx: 'auto',
         }}
       >
@@ -444,7 +481,7 @@ const Login = (): ReactElement => {
             {/* Left – Image panel */}
             <Box
               sx={{
-                width: { md: '42%' },
+                width: { md: '50%' },
                 minWidth: 280,
                 position: 'relative',
                 backgroundImage: `url(${logo2})`,
@@ -459,7 +496,7 @@ const Login = (): ReactElement => {
                   content: '""',
                   position: 'absolute',
                   inset: 0,
-                  background: `linear-gradient(135deg, rgba(25, 118, 210, ${1 - imageOpacity}) 0%, rgba(21, 101, 192, ${1 - imageOpacity * 0.8}) 100%)`,
+                  background: `linear-gradient(135deg, rgba(25, 118, 210, 0.30) 0%, rgba(21, 101, 192, 0.8) 100%)`,
                   zIndex: 0,
                 },
               }}
@@ -477,16 +514,17 @@ const Login = (): ReactElement => {
             {/* Right – Form */}
             <Box
               sx={{
-                flex: 1,
+                width: { md: '50%' },
                 p: { sm: 4, md: 5 },
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                justifyContent: 'center',
                 background: 'rgba(255, 255, 255, 0.98)',
                 minWidth: 0,
               }}
             >
-              <Link href="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', mb: 1 }}>
+              <Link href="/" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', mb: 1, width: '100%' }}>
                 <Image src={logo} width={82.6} sx={{ width: 70 }} />
               </Link>
               {formContent}

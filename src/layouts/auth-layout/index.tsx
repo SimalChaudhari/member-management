@@ -1,26 +1,22 @@
+import { Box } from '@mui/material';
 import { PropsWithChildren, ReactElement } from 'react';
-import { Stack, Box } from '@mui/material';
-
 const AuthLayout = ({ children }: PropsWithChildren): ReactElement => {
   return (
-  
-
-    <>
-      {/* Main Content */}
-      <Box
-        sx={{
-          position: 'relative',
-          zIndex: 1,
-          width: '100%',
-          maxWidth: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        {children}
-      </Box>
-    </>
+    <Box
+      sx={{
+        position: 'relative',
+        zIndex: 1,
+        width: '100%',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: { xs: 2, sm: 3, md: 4 },
+        boxSizing: 'border-box',
+      }}
+    >
+      {children}
+    </Box>
   );
 };
 
