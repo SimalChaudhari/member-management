@@ -6,7 +6,6 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  IconButton,
   InputLabel,
   Link,
   Paper,
@@ -22,8 +21,8 @@ import logo from 'assets/logo/isca-.png';
 import Image from 'components/base/Image';
 
 const SignUp = (): ReactElement => {
-  const theme = useTheme();
-  const [captchaCode] = useState('5V4CGJ');
+  useTheme();
+  const [_captchaCode] = useState('5V4CGJ');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 

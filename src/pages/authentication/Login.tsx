@@ -430,8 +430,6 @@ const Login = (): ReactElement => {
   const leftPanel = config.leftPanel;
   const greetingText = leftPanel?.greetingText ?? 'Welcome to';
   const mainText = leftPanel?.mainText ?? 'Institute of Singapore Chartered Accountants';
-  const imageOpacity = leftPanel?.imageOpacity ?? 0.3;
-
   return (
     <AuthLayout>
       <Stack

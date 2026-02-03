@@ -58,7 +58,7 @@ export const changePasswordAPI = async (
  */
 export const changePassword =
   (userId: string, newPassword: string) =>
-  async (dispatch: AppDispatch): Promise<boolean> => {
+  async (_dispatch: AppDispatch): Promise<boolean> => {
     try {
       await changePasswordAPI(userId, newPassword);
       return true;

@@ -19,7 +19,7 @@ import {
  */
 const transformVouchersData = (
   apiData: VoucherFieldValue[][],
-  columns: VoucherColumn[]
+  _columns: VoucherColumn[]
 ): VoucherRecord[] => {
   return apiData.map((row: VoucherFieldValue[]) => {
     const record: Partial<VoucherRecord> = {};

@@ -67,7 +67,7 @@ const DynamicDataGrid = ({
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   // Helper functions (same as your Payments component)
-  const shouldFormatAsCurrency = (apiName: string, fieldType: string) => {
+  const shouldFormatAsCurrency = (apiName: string, _fieldType: string) => {
     return currencyFields.some((field) => apiName.toLowerCase().includes(field.toLowerCase()));
   };
 

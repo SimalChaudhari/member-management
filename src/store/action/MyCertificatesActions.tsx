@@ -19,7 +19,7 @@ import {
  */
 const transformCertificatesData = (
   apiData: CertificateFieldValue[][],
-  columns: CertificateColumn[]
+  _columns: CertificateColumn[]
 ): CertificateRecord[] => {
   return apiData.map((row: CertificateFieldValue[]) => {
     const record: Partial<CertificateRecord> = {};

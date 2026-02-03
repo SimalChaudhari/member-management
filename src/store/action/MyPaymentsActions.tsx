@@ -19,7 +19,7 @@ import {
  */
 const transformPaymentsData = (
   apiData: PaymentFieldValue[][],
-  columns: PaymentColumn[]
+  _columns: PaymentColumn[]
 ): PaymentRecord[] => {
   return apiData.map((row: PaymentFieldValue[]) => {
     const record: Partial<PaymentRecord> = {};

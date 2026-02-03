@@ -16,10 +16,7 @@ import {
   Fade,
   Skeleton,
   useTheme,
-  Chip
 } from '@mui/material';
-import resetPassword from 'assets/authentication-banners/reset-password.png';
-import passwordUpdated from 'assets/authentication-banners/password-updated.png';
 import successTick from 'assets/authentication-banners/successTick.png';
 import Image from 'components/base/Image';
 import logo from 'assets/logo/isca-.png';

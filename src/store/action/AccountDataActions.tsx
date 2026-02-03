@@ -1,7 +1,7 @@
 import axiosInstance from 'config/axios';
 import { getStoredInstanceUrl } from 'services/sso';
 import type { AppDispatch } from 'store/Store';
-import type { AccountDataResponse, SalesforceQueryResponse } from 'store/types/profileMetadata';
+import type { SalesforceQueryResponse } from 'store/types/profileMetadata';
 import {
   ACCOUNT_DATA_FETCH_START,
   ACCOUNT_DATA_FETCH_SUCCESS,

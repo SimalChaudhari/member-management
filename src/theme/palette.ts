@@ -2,7 +2,6 @@ import { PaletteOptions } from '@mui/material';
 import { 
   iscaBlue, 
   iscaTeal, 
-  iscaGold, 
   iscaGreen, 
   iscaOrange, 
   iscaRed, 
@@ -66,7 +65,7 @@ const palette: PaletteOptions = {
     paper: iscaBackground.paper,
     blue: iscaBackground.blue,
     red: iscaBackground.red,
-  },
+  } as PaletteOptions['background'],
   divider: iscaDark[200],
   common: {
     black: iscaDark[900],

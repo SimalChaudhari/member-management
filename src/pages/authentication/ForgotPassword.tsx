@@ -11,15 +11,12 @@ import {
   Typography,
   Paper,
   useTheme,
-  useMediaQuery,
   Alert,
   Fade,
   Zoom,
   Box,
   Divider,
   Chip,
-  Tooltip,
-  Snackbar,
 } from '@mui/material';
 import Image from 'components/base/Image';
 import IconifyIcon from 'components/base/IconifyIcon';
@@ -32,10 +29,9 @@ const ForgotPassword = (): ReactElement => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
-  const [step, setStep] = useState<'form' | 'success'>('form');
+  const [, setStep] = useState<'form' | 'success'>('form');
   
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const emailRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus email field on mount
