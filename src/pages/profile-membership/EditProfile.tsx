@@ -2,15 +2,15 @@
  * ============================================================================
  * PROFILE & MEMBERSHIP MODULE
  * ============================================================================
- * 
+ *
  * This module contains all profile and membership related pages:
  * - EditProfile.tsx: Main profile editing page with dynamic form fields
  * - MyMembership.tsx: Membership details display page
  * - ChangePassword.tsx: Password change functionality
- * 
+ *
  * All components in this module are dynamically rendered based on API metadata.
  * No hardcoded content - everything comes from the API response structure.
- * 
+ *
  * Related Files:
  * - store/action/ProfileMetadataActions.tsx: Fetches form metadata
  * - store/action/AccountDataActions.tsx: Fetches account data values
@@ -24,9 +24,9 @@ import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchProfileMetadata } from 'store/action/ProfileMetadataActions';
 import { fetchAccountData } from 'store/action/AccountDataActions';
 import DynamicFormField from 'components/settings/DynamicFormField';
-import DataTable, { Column } from 'components/table/DataTable';
 import PageLoader from 'components/loading/PageLoader';
-import type { ProfileField, ContactSubSection, EmploymentHistoryRecord } from 'store/types/profileMetadata';
+import EmploymentHistoryTab from 'pages/profile-membership/EmploymentHistoryTab';
+import type { ProfileField, ContactSubSection } from 'store/types/profileMetadata';
 
 /**
  * Tab Panel Component
@@ -44,18 +44,28 @@ const TabPanel = ({
   return value === index ? <div className="p-6">{children}</div> : null;
 };
 
+/** Fields that should be read-only (disabled) - Name As Per ID, ID Type, ID Number, Nationality, Citizenship, Date of Birth */
+const DISABLED_FIELD_APIS = new Set([
+  'Name_As_Per_Id__c',
+  'ID_Type__c',
+  'ID_Number__c',
+  'Nationality__c',
+  'Citizenship__c',
+  'Date_of_Birth__c',
+]);
+
 /**
  * Edit Profile Page Component
- * 
+ *
  * This component dynamically renders form fields based on metadata fetched from API.
  * All tabs, sections, and fields are rendered dynamically based on the API response structure.
  * No hardcoded content - everything comes from the API metadata.
- * 
+ *
  * Features:
- * - Personal Details tab: Includes Personal Details, Residential Address, Mailing Address, 
+ * - Personal Details tab: Includes Personal Details, Residential Address, Mailing Address,
  *   Phone/Email, Interests & Preferences, and Telemarketing Information
  * - Employment History tab: Displays employment records in tables (Current and Previous)
- * 
+ *
  * Data Flow:
  * 1. Fetches profile metadata from API (defines form structure)
  * 2. Fetches account data from API (populates form values)
@@ -64,22 +74,25 @@ const TabPanel = ({
  */
 const EditProfile = (): ReactElement => {
   const dispatch = useAppDispatch();
-  
+
   // Redux state for profile metadata
-  const { metadata, loading, error } = useAppSelector(
-    (state) => state.profileMetadata
-  );
+  const { metadata, loading, error } = useAppSelector((state) => state.profileMetadata);
 
   // Redux state for account data (actual field values)
-  const { accountData, loading: accountLoading, error: accountError } = useAppSelector(
-    (state) => state.accountData
-  );
+  const {
+    accountData,
+    loading: accountLoading,
+    error: accountError,
+  } = useAppSelector((state) => state.accountData);
 
   // Active tab state
   const [tabValue, setTabValue] = useState(0);
 
   // Form values state - stores all field values by apiName
   const [formValues, setFormValues] = useState<Record<string, string>>({});
+
+  // When true, mailing address = residential address (fields auto-filled and disabled)
+  const [sameAsResidential, setSameAsResidential] = useState(false);
 
   /**
    * Get account ID from URL params or use default
@@ -89,11 +102,11 @@ const EditProfile = (): ReactElement => {
     // Check URL params first
     const urlParams = new URLSearchParams(window.location.search);
     const accountIdFromUrl = urlParams.get('accountId');
-    
+
     if (accountIdFromUrl) {
       return accountIdFromUrl;
     }
-    
+
     // Default account ID for testing - in production, get from user profile
     // TODO: Get account ID from authenticated user's profile
     return '001fV000001hMKzQAM';
@@ -106,7 +119,7 @@ const EditProfile = (): ReactElement => {
    */
   const getTabs = () => {
     if (!metadata) return [];
-    
+
     const tabs: Array<{ name: string; index: number }> = [];
     let index = 0;
 
@@ -200,7 +213,7 @@ const EditProfile = (): ReactElement => {
    */
   useEffect(() => {
     dispatch(fetchProfileMetadata());
-    
+
     // Fetch account data after a short delay to ensure metadata is loaded first
     const accountId = getAccountId();
     if (accountId) {
@@ -208,7 +221,7 @@ const EditProfile = (): ReactElement => {
       const timer = setTimeout(() => {
         dispatch(fetchAccountData(accountId));
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
   }, [dispatch]);
@@ -248,6 +261,7 @@ const EditProfile = (): ReactElement => {
             field={field}
             value={formValues[field.apiName] || ''}
             onChange={(value) => handleFieldChange(field.apiName, value)}
+            disabled={DISABLED_FIELD_APIS.has(field.apiName)}
           />
         ))}
       </div>
@@ -267,6 +281,7 @@ const EditProfile = (): ReactElement => {
           field={field}
           value={formValues[field.apiName] || ''}
           onChange={(value) => handleFieldChange(field.apiName, value)}
+          disabled={DISABLED_FIELD_APIS.has(field.apiName)}
         />
       </div>
     );
@@ -327,7 +342,7 @@ const EditProfile = (): ReactElement => {
     <div className="bg-white">
       {/* Dynamic page title */}
       <h1 className="text-xl font-bold text-gray-800 pt-8 ml-6">Edit Profile</h1>
-      
+
       {/* Dynamic Tab Navigation - generated from metadata */}
       {tabs.length > 0 && (
         <div className="border-b border-gray-200 mb-4">
@@ -352,24 +367,27 @@ const EditProfile = (): ReactElement => {
       {/* Dynamic Tabs - rendered based on available sections */}
       {tabs.map((tab) => {
         // Personal Details tab (includes Residential Address, Mailing Address, Phone/Email, Interests & Preferences, Telemarketing)
-        if (metadata.personalDetails && 
-            (tab.name === metadata.personalDetails.sectionName || tab.index === 0)) {
+        if (
+          metadata.personalDetails &&
+          (tab.name === metadata.personalDetails.sectionName || tab.index === 0)
+        ) {
           // Find Residential Address subsection from contactDetails
-          const residentialSubSection = metadata.contactDetails?.find(
-            (sub: ContactSubSection) => sub.subSectionName.toLowerCase().includes('residential')
+          const residentialSubSection = metadata.contactDetails?.find((sub: ContactSubSection) =>
+            sub.subSectionName.toLowerCase().includes('residential'),
           );
 
           // Find Mailing Address subsection from contactDetails
-          const mailingSubSection = metadata.contactDetails?.find(
-            (sub: ContactSubSection) => sub.subSectionName.toLowerCase().includes('mailing')
+          const mailingSubSection = metadata.contactDetails?.find((sub: ContactSubSection) =>
+            sub.subSectionName.toLowerCase().includes('mailing'),
           );
 
           // Find Phone/Email subsection from contactDetails (exclude residential and mailing)
-          const phoneEmailSubSections = metadata.contactDetails?.filter(
-            (sub: ContactSubSection) => 
-              !sub.subSectionName.toLowerCase().includes('residential') &&
-              !sub.subSectionName.toLowerCase().includes('mailing')
-          ) || [];
+          const phoneEmailSubSections =
+            metadata.contactDetails?.filter(
+              (sub: ContactSubSection) =>
+                !sub.subSectionName.toLowerCase().includes('residential') &&
+                !sub.subSectionName.toLowerCase().includes('mailing'),
+            ) || [];
 
           return (
             <TabPanel key={tab.index} value={tabValue} index={tab.index}>
@@ -386,6 +404,10 @@ const EditProfile = (): ReactElement => {
                     <h2 className="text-xl font-semibold mb-4 text-gray-800 mt-8">
                       {residentialSubSection.subSectionName}
                     </h2>
+                    <p className="text-sm text-gray-500 mb-3">
+                      If Singapore address, please select Country first before inputting Postal
+                      Code.
+                    </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       {residentialSubSection.sectionFields.map((field: ProfileField) => (
                         <DynamicFormField
@@ -393,6 +415,7 @@ const EditProfile = (): ReactElement => {
                           field={field}
                           value={formValues[field.apiName] || ''}
                           onChange={(value) => handleFieldChange(field.apiName, value)}
+                          disabled={DISABLED_FIELD_APIS.has(field.apiName)}
                         />
                       ))}
                     </div>
@@ -402,44 +425,54 @@ const EditProfile = (): ReactElement => {
                 {/* Mailing Address Section - merged into Personal Details */}
                 {mailingSubSection && (
                   <>
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800 mt-8">
-                      {mailingSubSection.subSectionName}
-                    </h2>
-                    {/* Dynamic handling for mailing address checkbox - only if residential address exists */}
-                    {residentialSubSection && (
-                      <div className="mb-4">
-                        <label className="flex items-center">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-8 mb-4">
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {mailingSubSection.subSectionName}
+                      </h2>
+                      {residentialSubSection && (
+                        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
                           <input
                             type="checkbox"
-                            className="mr-2"
+                            className="rounded"
+                            checked={sameAsResidential}
                             onChange={(e) => {
-                              if (e.target.checked) {
-                                // Copy residential address values to mailing address dynamically
+                              const checked = e.target.checked;
+                              setSameAsResidential(checked);
+                              if (checked) {
+                                // Copy residential address values to mailing address
                                 const residentialFields = residentialSubSection.sectionFields || [];
                                 const mailingFields = mailingSubSection.sectionFields;
                                 const newValues = { ...formValues };
-                                
+
                                 residentialFields.forEach((resField: ProfileField) => {
-                                  // Map residential to mailing fields dynamically
                                   const correspondingMailingField = mailingFields.find(
-                                    (mf: ProfileField) => 
-                                      mf.apiName.replace('Mailing', '').replace('PersonMailing', '') ===
-                                      resField.apiName.replace('Residential', '').replace('Person', '')
+                                    (mf: ProfileField) =>
+                                      mf.apiName
+                                        .replace('Mailing', '')
+                                        .replace('PersonMailing', '') ===
+                                      resField.apiName
+                                        .replace('Residential', '')
+                                        .replace('Person', ''),
                                   );
                                   if (correspondingMailingField) {
-                                    newValues[correspondingMailingField.apiName] = formValues[resField.apiName];
+                                    newValues[correspondingMailingField.apiName] =
+                                      formValues[resField.apiName] ?? '';
                                   }
                                 });
-                                
+
                                 setFormValues(newValues);
                               }
                             }}
                           />
-                          {/* Dynamic text based on subsection names */}
-                          {`Use same address as ${residentialSubSection?.subSectionName?.toLowerCase() || 'residential address'}`}
+                          My mailing address is the same as my residential address provided above.
                         </label>
-                      </div>
-                    )}
+                      )}
+                    </div>
+
+                    <p className="text-sm text-gray-500 mb-3">
+                      If Singapore address, please select Country first before inputting Postal
+                      Code.
+                    </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                       {mailingSubSection.sectionFields.map((field: ProfileField) => (
                         <DynamicFormField
@@ -447,6 +480,9 @@ const EditProfile = (): ReactElement => {
                           field={field}
                           value={formValues[field.apiName] || ''}
                           onChange={(value) => handleFieldChange(field.apiName, value)}
+                          disabled={
+                            DISABLED_FIELD_APIS.has(field.apiName) || sameAsResidential
+                          }
                         />
                       ))}
                     </div>
@@ -454,23 +490,25 @@ const EditProfile = (): ReactElement => {
                 )}
 
                 {/* Phone Number and Email Address Section - merged into Personal Details */}
-                {phoneEmailSubSections.length > 0 && phoneEmailSubSections.map((subSection: ContactSubSection, index: number) => (
-                  <div key={index}>
-                    <h2 className="text-xl font-semibold mb-4 text-gray-800 mt-8">
-                      {subSection.subSectionName}
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      {subSection.sectionFields.map((field: ProfileField) => (
-                        <DynamicFormField
-                          key={field.apiName}
-                          field={field}
-                          value={formValues[field.apiName] || ''}
-                          onChange={(value) => handleFieldChange(field.apiName, value)}
-                        />
-                      ))}
+                {phoneEmailSubSections.length > 0 &&
+                  phoneEmailSubSections.map((subSection: ContactSubSection, index: number) => (
+                    <div key={index}>
+                      <h2 className="text-xl font-semibold mb-4 text-gray-800 mt-8">
+                        {subSection.subSectionName}
+                      </h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        {subSection.sectionFields.map((field: ProfileField) => (
+                          <DynamicFormField
+                            key={field.apiName}
+                            field={field}
+                            value={formValues[field.apiName] || ''}
+                            onChange={(value) => handleFieldChange(field.apiName, value)}
+                            disabled={DISABLED_FIELD_APIS.has(field.apiName)}
+                          />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
 
                 {/* Interests and Preferences Section - merged into Personal Details */}
                 {metadata.interestsAndPreferences && (
@@ -486,6 +524,7 @@ const EditProfile = (): ReactElement => {
                             field={field}
                             value={formValues[field.apiName] || ''}
                             onChange={(value) => handleFieldChange(field.apiName, value)}
+                            disabled={DISABLED_FIELD_APIS.has(field.apiName)}
                           />
                         </div>
                       ))}
@@ -501,10 +540,10 @@ const EditProfile = (): ReactElement => {
                     </h2>
                     <div className="mb-4">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {metadata.telemarketingInformation.sectionFields.map((field: ProfileField) =>
-                          renderTelemarketingField(field)
+                        {metadata.telemarketingInformation.sectionFields.map(
+                          (field: ProfileField) => renderTelemarketingField(field),
                         )}
-                      </div>  
+                      </div>
                     </div>
                   </>
                 )}
@@ -530,182 +569,21 @@ const EditProfile = (): ReactElement => {
         }
 
         // Employment History tab
-        if (metadata.employmentHistory && 
-            (tab.name === metadata.employmentHistory.sectionName || 
-             tab.name.toLowerCase().includes('employment') ||
-             tab.name.toLowerCase().includes('history'))) {
-          
-          // Get employment history records from account data
-          const employmentRecords = accountData?.Employment_History__r?.records || [];
-          const currentEmploymentRecords = employmentRecords.filter(
-            (record: EmploymentHistoryRecord) => record.Is_Current_Employment__c === true
-          );
-          const previousEmploymentRecords = employmentRecords.filter(
-            (record: EmploymentHistoryRecord) => record.Is_Current_Employment__c !== true
-          );
-
-          // Get Current Employment Status field (if exists in metadata)
-          const currentEmploymentStatusField = metadata.employmentHistory.sectionFields.find(
-            (field: ProfileField) => field.apiName.toLowerCase().includes('current') && 
-            field.apiName.toLowerCase().includes('status')
-          );
-
-          // Table columns based on metadata fields (exclude some fields, focus on main ones)
-          const tableFields = metadata.employmentHistory.sectionFields.filter(
-            (field: ProfileField) => 
-              !field.apiName.toLowerCase().includes('current') &&
-              !field.apiName.toLowerCase().includes('status') &&
-              !field.apiName.toLowerCase().includes('responsibilities') &&
-              !field.apiName.toLowerCase().includes('experience') &&
-              !field.apiName.toLowerCase().includes('other') &&
-              field.fieldType !== 'DATE' && // Exclude date fields
-              !field.apiName.toLowerCase().includes('date') // Exclude any field with 'date' in name
-          );
-
-          // Prepare columns for DataTable component
-          const currentEmploymentColumns: Column<EmploymentHistoryRecord>[] = [
-            {
-              key: 'Id',
-              header: 'No.',
-              sortable: false,
-              width: '60px',
-              render: (_value, _row, index) => (index !== undefined ? index + 1 : ''),
-            },
-            ...tableFields.map((field: ProfileField) => ({
-              key: field.apiName as keyof EmploymentHistoryRecord,
-              header: field.label,
-              sortable: true,
-            })),
-            {
-              key: 'Id' as keyof EmploymentHistoryRecord,
-              header: 'Action',
-              sortable: false,
-              width: '120px',
-              render: () => (
-                <div className="flex gap-2">
-                  <button className="text-blue-600 hover:text-blue-800">Edit</button>
-                  <span>|</span>
-                  <button className="text-red-600 hover:text-red-800">Delete</button>
-                </div>
-              ),
-            },
-          ];
-
-          const previousEmploymentColumns: Column<EmploymentHistoryRecord>[] = [
-            {
-              key: 'Id',
-              header: 'No.',
-              sortable: false,
-              width: '60px',
-              render: (_value, _row, index) => (index !== undefined ? index + 1 : ''),
-            },
-            ...tableFields.map((field: ProfileField) => ({
-              key: field.apiName as keyof EmploymentHistoryRecord,
-              header: field.label,
-              sortable: true,
-            })),
-            {
-              key: 'Id' as keyof EmploymentHistoryRecord,
-              header: 'Action',
-              sortable: false,
-              width: '120px',
-              render: () => (
-                <div className="flex gap-2">
-                  <button className="text-blue-600 hover:text-blue-800">Edit</button>
-                  <span>|</span>
-                  <button className="text-red-600 hover:text-red-800">Delete</button>
-                </div>
-              ),
-            },
-          ];
-
+        if (
+          metadata.employmentHistory &&
+          (tab.name === metadata.employmentHistory.sectionName ||
+            tab.name.toLowerCase().includes('employment') ||
+            tab.name.toLowerCase().includes('history'))
+        ) {
           return (
             <TabPanel key={tab.index} value={tabValue} index={tab.index}>
-              <div className="bg-white rounded-lg shadow p-6">
-                {/* Current Employment Status */}
-                {currentEmploymentStatusField && (
-                  <div className="mb-6">
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      {currentEmploymentStatusField.label}
-                    </label>
-                    <DynamicFormField
-                      field={currentEmploymentStatusField}
-                      value={formValues[currentEmploymentStatusField.apiName] || ''}
-                      onChange={(value) => handleFieldChange(currentEmploymentStatusField.apiName, value)}
-                    />
-                    <div className="flex justify-end mt-4">
-                      <button
-                        type="button"
-                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                      >
-                        Save
-                      </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* Current Employment Section */}
-                <div className="mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-800">Current Employment</h2>
-                  </div>
-                  
-                  <div className="mb-4 flex items-end justify-between gap-4">
-                    <div className="w-auto min-w-[300px]">
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Select Primary Employment
-                      </label>
-                      <select className="w-full border border-gray-300 rounded px-3 py-2">
-                        <option value="">Select</option>
-                        {currentEmploymentRecords.map((record: EmploymentHistoryRecord) => (
-                          <option key={record.Id} value={record.Id}>
-                            {record.Employer_Name__c || record.Other_Organisation_Name__c || 'Unnamed'}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <button
-                      type="button"
-                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 whitespace-nowrap"
-                    >
-                      + New
-                    </button>
-                  </div>
-
-                  {/* Current Employment Table */}
-                  <DataTable<EmploymentHistoryRecord>
-                    data={currentEmploymentRecords}
-                    columns={currentEmploymentColumns}
-                    emptyMessage="No data available"
-                    showSearch={false}
-                    showHeader={false}
-                    defaultPageSize={10}
-                  />
-                </div>
-
-                {/* Previous Work Experience Section */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-800">Previous Work Experience</h2>
-                    <button
-                      type="button"
-                      className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
-                    >
-                      + New
-                    </button>
-                  </div>
-
-                  {/* Previous Work Experience Table */}
-                  <DataTable<EmploymentHistoryRecord>
-                    data={previousEmploymentRecords}
-                    columns={previousEmploymentColumns}
-                    emptyMessage="No data available"
-                    showSearch={false}
-                    showHeader={false}
-                    defaultPageSize={10}
-                  />
-                </div>
-              </div>
+              <EmploymentHistoryTab
+                employmentHistory={metadata.employmentHistory}
+                accountData={accountData}
+                formValues={formValues}
+                onFieldChange={handleFieldChange}
+                disabledFieldApis={DISABLED_FIELD_APIS}
+              />
             </TabPanel>
           );
         }

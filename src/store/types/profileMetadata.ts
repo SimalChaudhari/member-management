@@ -20,6 +20,7 @@ export type ProfileField = {
   label: string;
   fieldType: FieldType;
   apiName: string;
+  picklistValues?: string[]; // Options for PICKLIST/MULTIPICKLIST (from API)
 };
 
 // Section with fields (for personalDetails, telemarketingInformation, etc.)

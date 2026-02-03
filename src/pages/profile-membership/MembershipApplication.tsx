@@ -107,50 +107,57 @@ const MembershipApplication = (): ReactElement => {
       });
     });
 
-    // Add custom Action column at the end
+    // Add custom Action column: display only what the API returns (isDownload / isDelete)
     columns.push({
       key: 'ID' as keyof MembershipApplicationRecord,
       header: 'Action',
       sortable: false,
       width: '150px',
-      render: (_value, row) => (
-        <div className="flex gap-2">
-          {row.isDownload && (
-            <button
-              type="button"
-              onClick={() => {
-                if (row.downloadUrl) {
-                  window.open(row.downloadUrl, '_blank');
-                }
-              }}
-              className="px-3 py-1 text-xs text-white rounded hover:opacity-90"
-              style={{ backgroundColor: appColors.primary.main }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = appColors.primary.hover;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = appColors.primary.main;
-              }}
-            >
-              Download
-            </button>
-          )}
-          {row.isDelete && (
-            <button
-              type="button"
-              onClick={() => {
-                // TODO: Implement delete functionality
-                if (window.confirm('Are you sure you want to delete this application?')) {
-                  console.log('Delete application:', row.applicationID);
-                }
-              }}
-              className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
-            >
-              Delete
-            </button>
-          )}
-        </div>
-      ),
+      render: (_value, row) => {
+        const hasDownload = row.isDownload === true;
+        const hasDelete = row.isDelete === true;
+        if (!hasDownload && !hasDelete) {
+          return <span className="text-gray-500">—</span>;
+        }
+        return (
+          <div className="flex gap-2">
+            {hasDownload && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (row.downloadUrl) {
+                    window.open(row.downloadUrl, '_blank');
+                  }
+                }}
+                className="px-3 py-1 text-xs text-white rounded hover:opacity-90"
+                style={{ backgroundColor: appColors.primary.main }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = appColors.primary.hover;
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = appColors.primary.main;
+                }}
+              >
+                Download
+              </button>
+            )}
+            {hasDelete && (
+              <button
+                type="button"
+                onClick={() => {
+                  // TODO: Implement delete functionality
+                  if (window.confirm('Are you sure you want to delete this application?')) {
+                    console.log('Delete application:', row.applicationID);
+                  }
+                }}
+                className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Delete
+              </button>
+            )}
+          </div>
+        );
+      },
     });
 
     return columns;
