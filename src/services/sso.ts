@@ -6,18 +6,35 @@ export type { SsoTokenResponse };
 // CONSTANTS
 // ============================================================================
 
-// Generic storage keys - work for both SSO and regular email/password login
-const TOKEN_STORAGE_KEY = 'auth_token';
-const REFRESH_TOKEN_STORAGE_KEY = 'refresh_token';
-const INSTANCE_URL_STORAGE_KEY = 'instance_url';
-const PROFILE_STORAGE_KEY = 'user_profile';
+// Cookie keys - work for both SSO and regular email/password login
+const TOKEN_COOKIE_KEY = 'auth_token';
+const REFRESH_TOKEN_COOKIE_KEY = 'refresh_token';
+const INSTANCE_URL_COOKIE_KEY = 'instance_url';
+const PROFILE_COOKIE_KEY = 'user_profile';
 
-// Legacy storage keys for backward compatibility
-const LEGACY_TOKEN_KEY = 'token';
-const LEGACY_SSO_TOKEN_KEY = 'sf_sso_token';
-const LEGACY_SSO_REFRESH_TOKEN_KEY = 'sf_sso_refresh_token';
-const LEGACY_SSO_INSTANCE_URL_KEY = 'sf_sso_instance_url';
-const LEGACY_SSO_PROFILE_KEY = 'sf_sso_profile';
+// Cookie options: session cookie (cleared when browser closes), SameSite for CSRF protection
+const COOKIE_OPTS = `path=/; SameSite=Lax${typeof window !== 'undefined' && window.location?.protocol === 'https:' ? '; Secure' : ''}`;
+
+// ============================================================================
+// COOKIE HELPERS
+// ============================================================================
+
+function setCookie(name: string, value: string): void {
+  if (typeof document === 'undefined') return;
+  const encoded = encodeURIComponent(value);
+  document.cookie = `${name}=${encoded}; ${COOKIE_OPTS}`;
+}
+
+function getCookie(name: string): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${encodeURIComponent(name).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}=([^;]*)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function removeCookie(name: string): void {
+  if (typeof document === 'undefined') return;
+  document.cookie = `${name}=; path=/; Max-Age=0; SameSite=Lax`;
+}
 
 // ============================================================================
 // TYPES
@@ -81,7 +98,8 @@ export async function exchangeCodeForToken(code: string): Promise<SsoTokenRespon
 }
 
 /**
- * Store authentication tokens (works for both SSO and regular login)
+ * Store authentication tokens in cookies (works for both SSO and regular login)
+ * Uses session cookies - cleared when browser closes
  * @param accessToken - Access token to store
  * @param refreshToken - Optional refresh token
  * @param instanceUrl - Optional instance URL (for Salesforce)
@@ -89,17 +107,15 @@ export async function exchangeCodeForToken(code: string): Promise<SsoTokenRespon
 export function storeAuthToken(accessToken: string, refreshToken?: string, instanceUrl?: string): void {
   if (accessToken) {
     const token = String(accessToken).trim();
-    // Store in sessionStorage (session-only, cleared when browser closes)
-    sessionStorage.setItem(TOKEN_STORAGE_KEY, token);
-    sessionStorage.setItem(LEGACY_TOKEN_KEY, token); // Legacy key for backward compatibility
+    setCookie(TOKEN_COOKIE_KEY, token);
   }
-  
+
   if (refreshToken) {
-    sessionStorage.setItem(REFRESH_TOKEN_STORAGE_KEY, String(refreshToken).trim());
+    setCookie(REFRESH_TOKEN_COOKIE_KEY, String(refreshToken).trim());
   }
-  
+
   if (instanceUrl) {
-    sessionStorage.setItem(INSTANCE_URL_STORAGE_KEY, String(instanceUrl).trim());
+    setCookie(INSTANCE_URL_COOKIE_KEY, String(instanceUrl).trim());
   }
 }
 
@@ -115,26 +131,19 @@ export function storeSsoTokens(data: SsoTokenResponse): void {
 }
 
 export function getStoredAccessToken(): string | null {
-  // Check sessionStorage first (primary storage)
-  const sessionToken = sessionStorage.getItem(TOKEN_STORAGE_KEY);
-  
-  // Fallback to legacy keys for backward compatibility
-  const legacyToken = sessionStorage.getItem(LEGACY_TOKEN_KEY) ?? sessionStorage.getItem(LEGACY_SSO_TOKEN_KEY);
-  
-  const token = sessionToken ?? legacyToken;
-  
+  const token = getCookie(TOKEN_COOKIE_KEY);
+
   if (!token) {
     return null;
   }
-  
+
   // Only trim leading/trailing whitespace - don't remove spaces within token
   // Salesforce tokens can contain spaces, so we only trim edges
   return token.trim();
 }
 
 export function getStoredInstanceUrl(): string | null {
-  // Check generic key first, then legacy SSO key
-  return sessionStorage.getItem(INSTANCE_URL_STORAGE_KEY) ?? sessionStorage.getItem(LEGACY_SSO_INSTANCE_URL_KEY);
+  return getCookie(INSTANCE_URL_COOKIE_KEY);
 }
 
 export async function fetchUserInfo(): Promise<UserProfile> {
@@ -168,13 +177,16 @@ export async function fetchUserInfo(): Promise<UserProfile> {
 }
 
 export function storeProfile(profile: UserProfile): void {
-  sessionStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+  try {
+    setCookie(PROFILE_COOKIE_KEY, JSON.stringify(profile));
+  } catch {
+    // Cookie may exceed size limit; profile will be refetched
+  }
 }
 
 export function getStoredProfile(): UserProfile | null {
   try {
-    // Check generic key first, then legacy SSO key
-    const s = sessionStorage.getItem(PROFILE_STORAGE_KEY) ?? sessionStorage.getItem(LEGACY_SSO_PROFILE_KEY);
+    const s = getCookie(PROFILE_COOKIE_KEY);
     if (!s) return null;
     return JSON.parse(s) as UserProfile;
   } catch {
@@ -183,15 +195,8 @@ export function getStoredProfile(): UserProfile | null {
 }
 
 export function clearSsoTokens(): void {
-  // Clear all data from sessionStorage (generic and legacy keys)
-  sessionStorage.removeItem(TOKEN_STORAGE_KEY);
-  sessionStorage.removeItem(REFRESH_TOKEN_STORAGE_KEY);
-  sessionStorage.removeItem(INSTANCE_URL_STORAGE_KEY);
-  sessionStorage.removeItem(PROFILE_STORAGE_KEY);
-  // Legacy keys for backward compatibility
-  sessionStorage.removeItem(LEGACY_TOKEN_KEY);
-  sessionStorage.removeItem(LEGACY_SSO_TOKEN_KEY);
-  sessionStorage.removeItem(LEGACY_SSO_REFRESH_TOKEN_KEY);
-  sessionStorage.removeItem(LEGACY_SSO_INSTANCE_URL_KEY);
-  sessionStorage.removeItem(LEGACY_SSO_PROFILE_KEY);
+  removeCookie(TOKEN_COOKIE_KEY);
+  removeCookie(REFRESH_TOKEN_COOKIE_KEY);
+  removeCookie(INSTANCE_URL_COOKIE_KEY);
+  removeCookie(PROFILE_COOKIE_KEY);
 }

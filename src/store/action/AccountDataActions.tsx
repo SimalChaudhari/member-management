@@ -137,3 +137,61 @@ export const fetchAccountData =
       return false;
     }
   };
+
+/** API field names that must be sent as numbers in PATCH body */
+const NUMERIC_ACCOUNT_FIELDS = new Set([
+  'Mobile_Country_Code__c',
+  'PersonMobilePhone',
+  'Other_Phone_Country_Code__c',
+  'PersonOtherPhone',
+]);
+
+/**
+ * Build PATCH body from form values: string values as-is, numeric fields as numbers.
+ */
+export const buildAccountPatchBody = (
+  formValues: Record<string, string>
+): Record<string, string | number> => {
+  const body: Record<string, string | number> = {};
+  for (const [key, value] of Object.entries(formValues)) {
+    if (value === '' || value === undefined) continue;
+    if (NUMERIC_ACCOUNT_FIELDS.has(key)) {
+      const num = Number(value);
+      if (!Number.isNaN(num)) body[key] = num;
+    } else {
+      body[key] = value;
+    }
+  }
+  return body;
+};
+
+/**
+ * Update account (profile) via Salesforce PATCH sobjects/Account/{id}.
+ * On success, refetches account data so the store stays in sync.
+ */
+export const updateAccountData =
+  (accountId: string, body: Record<string, string | number>) =>
+  async (dispatch: AppDispatch): Promise<boolean> => {
+    try {
+      const instanceUrl = getStoredInstanceUrl();
+      if (!instanceUrl) {
+        throw new Error('No instance URL available');
+      }
+
+      const baseUrl = instanceUrl.replace(/\/$/, '');
+      const url = `${baseUrl}/services/data/v52.0/sobjects/Account/${accountId}`;
+
+      await axiosInstance.patch(url, body);
+
+      // Refetch so Redux has latest data
+      await dispatch(fetchAccountData(accountId));
+      return true;
+    } catch (err) {
+      const message =
+        err && typeof err === 'object' && 'message' in err
+          ? String((err as Error).message)
+          : 'Failed to update profile';
+      dispatch({ type: ACCOUNT_DATA_FETCH_ERROR, payload: message });
+      return false;
+    }
+  };

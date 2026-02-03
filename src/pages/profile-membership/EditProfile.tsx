@@ -22,9 +22,14 @@
 import { ReactElement, useState, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from 'store/hooks';
 import { fetchProfileMetadata } from 'store/action/ProfileMetadataActions';
-import { fetchAccountData } from 'store/action/AccountDataActions';
+import {
+  fetchAccountData,
+  updateAccountData,
+  buildAccountPatchBody,
+} from 'store/action/AccountDataActions';
 import DynamicFormField from 'components/settings/DynamicFormField';
 import PageLoader from 'components/loading/PageLoader';
+import ErrorWithRetry from 'components/feedback/ErrorWithRetry';
 import EmploymentHistoryTab from 'pages/profile-membership/EmploymentHistoryTab';
 import type { ProfileField, ContactSubSection } from 'store/types/profileMetadata';
 
@@ -93,6 +98,9 @@ const EditProfile = (): ReactElement => {
 
   // When true, mailing address = residential address (fields auto-filled and disabled)
   const [sameAsResidential, setSameAsResidential] = useState(false);
+
+  // Submitting profile update (PATCH) in progress
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
    * Get account ID from URL params or use default
@@ -301,23 +309,16 @@ const EditProfile = (): ReactElement => {
    */
   if (error || accountError) {
     return (
-      <div className="bg-white p-6">
-        <div className="text-center py-8">
-          <p className="text-red-600">{error || accountError}</p>
-          <button
-            onClick={() => {
-              dispatch(fetchProfileMetadata());
-              const accountId = getAccountId();
-              if (accountId) {
-                dispatch(fetchAccountData(accountId));
-              }
-            }}
-            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
+      <ErrorWithRetry
+        message={error || accountError || ''}
+        onRetry={() => {
+          dispatch(fetchProfileMetadata());
+          const accountId = getAccountId();
+          if (accountId) {
+            dispatch(fetchAccountData(accountId));
+          }
+        }}
+      />
     );
   }
 
@@ -552,15 +553,27 @@ const EditProfile = (): ReactElement => {
                 <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-gray-200">
                   <button
                     type="button"
-                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50"
+                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded hover:bg-gray-50 disabled:opacity-50"
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </button>
                   <button
-                    type="submit"
-                    className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    type="button"
+                    className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={isSubmitting}
+                    onClick={async () => {
+                      const accountId = getAccountId();
+                      const body = buildAccountPatchBody(formValues);
+                      setIsSubmitting(true);
+                      const ok = await dispatch(updateAccountData(accountId, body));
+                      setIsSubmitting(false);
+                      if (!ok) {
+                        // Error already dispatched to Redux; error UI will show on next render
+                      }
+                    }}
                   >
-                    Submit
+                    {isSubmitting ? 'Saving...' : 'Submit'}
                   </button>
                 </div>
               </div>
