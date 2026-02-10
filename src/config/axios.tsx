@@ -19,19 +19,32 @@ const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   (config) => {
     const token = getStoredAccessToken();
-    
+
+    // In development, send Salesforce API requests through Vite proxy to avoid CORS
+    if (import.meta.env.DEV && config.url) {
+      const url = config.url.startsWith('http') ? config.url : (config.baseURL || '') + (config.url.startsWith('/') ? config.url : '/' + config.url);
+      if (url.includes('salesforce.com') || url.includes('my.site.com')) {
+        const parsed = new URL(url);
+        config.baseURL = '';
+        config.url = '/api/salesforce' + parsed.pathname + parsed.search;
+        // Tell the dev server which Salesforce host to proxy to (so token matches instance)
+        config.headers['X-Salesforce-Target'] = parsed.origin;
+      }
+    }
+
     if (token) {
       // Ensure Authorization header is set correctly with Bearer prefix
       // Token is already trimmed in getStoredAccessToken()
       config.headers.Authorization = `Bearer ${token}`;
-      
+
       // For Salesforce API endpoints (/services/apexrest/), use instance_url if available
-      // This ensures token works with the correct Salesforce instance domain
-      const instanceUrl = getStoredInstanceUrl();
-      if (instanceUrl && config.url && config.url.startsWith('/services/')) {
-        // Override baseURL to use instance_url for Salesforce API calls
-        // This is important because tokens are tied to specific Salesforce instances
-        config.baseURL = instanceUrl.replace(/\/$/, '');
+      // This ensures token works with the correct Salesforce instance domain (production only; dev uses proxy)
+      if (!import.meta.env.DEV) {
+        const instanceUrl = getStoredInstanceUrl();
+        if (instanceUrl && config.url && config.url.startsWith('/services/')) {
+          // Override baseURL to use instance_url for Salesforce API calls
+          config.baseURL = instanceUrl.replace(/\/$/, '');
+        }
       }
     }
     return config;
