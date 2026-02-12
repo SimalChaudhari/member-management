@@ -165,7 +165,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.digitalBadge,
-    element: <Badges />,
+    element: <ComingSoon />,
   },
   {
     path: routePaths.myCertificates,
