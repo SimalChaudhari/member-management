@@ -101,13 +101,6 @@ const Contact = lazy(async () => {
   ]).then(([moduleExports]) => moduleExports);
 });
 
-const Badges = lazy(async () => {
-  return Promise.all([
-    import('pages/settings/Badges'),
-    new Promise((resolve) => setTimeout(resolve, 500)),
-  ]).then(([moduleExports]) => moduleExports);
-});
-
 const ComingSoon = lazy(async () => {
   await new Promise((resolve) => setTimeout(resolve, 300));
   return import('pages/ComingSoon');
