@@ -35,14 +35,13 @@ const NavButton = ({
   // Use controlled state from parent, fallback to local state if not provided
   const checked = isOpen;
 
+  // Reset nested state on dashboard; do not call onToggle(false) here — that would
+  // be interpreted by the parent as "open this menu" and the last item would stay open.
   useEffect(() => {
     if (pathname === '/') {
       setNestedChecked([]);
-      if (onToggle) {
-        onToggle(false);
-      }
     }
-  }, [pathname, onToggle]);
+  }, [pathname]);
 
   const handleNestedChecked = (index: any, value: boolean) => {
     const updatedBooleanArray = [...nestedChecked];

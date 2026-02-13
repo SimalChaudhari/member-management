@@ -32,10 +32,12 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
   const [openMenuIndex, setOpenMenuIndex] = useState<number | null>(null);
 
   /**
-   * Check if a menu item has an active submenu based on current pathname
+   * Check if a menu item has an active submenu based on current pathname.
+   * Section root path (e.g. /support-community) counts as active so one click opens the menu.
    */
   const isMenuActive = (navItem: (typeof navItems)[number]): boolean => {
     if (!navItem.sublist) return false;
+    if (pathname === navItem.path) return true;
     return navItem.sublist.some(subItem =>
       pathname === `${navItem.path}/${subItem.path}` ||
       (subItem.sublist && subItem.sublist.some(nestedItem =>
@@ -45,14 +47,14 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
   };
 
   /**
-   * Auto-open menu if current path matches a submenu item
+   * Auto-open menu if current path matches a submenu item; close all when none match (e.g. dashboard).
    */
   useEffect(() => {
     if (!isCollapsed) {
       const activeIndex = navItems.findIndex((item) => isMenuActive(item));
       if (activeIndex !== -1) {
         setOpenMenuIndex(activeIndex);
-      } else if (pathname === '/') {
+      } else {
         setOpenMenuIndex(null);
       }
     }
