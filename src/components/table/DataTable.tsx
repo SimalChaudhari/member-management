@@ -277,7 +277,7 @@ const DataTable = <T extends Record<string, any>>({
                     className={`px-1 py-2 sm:px-4 sm:py-4 text-xs sm:text-sm ${column.wrap ? 'align-top' : ''}`}
                   >
                     {column.render ? (
-                      column.render(row[column.key], row, idx)
+                      column.render(row[column.key], row, page * pageSize + idx)
                     ) : (
                       <span className={column.wrap ? 'block break-words whitespace-normal' : 'truncate block'}>{row[column.key]}</span>
                     )}

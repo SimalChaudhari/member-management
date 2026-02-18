@@ -8,6 +8,7 @@ import MyPaymentsReducer from './reducer/MyPaymentsReducer';
 import MyVouchersReducer from './reducer/MyVouchersReducer';
 import MyCertificatesReducer from './reducer/MyCertificatesReducer';
 import CourseRegistrationReducer from './reducer/CourseRegistrationReducer';
+import WorkExperienceMetadataReducer from './reducer/WorkExperienceMetadataReducer';
 
 const reducer = combineReducers({
 
@@ -20,6 +21,7 @@ const reducer = combineReducers({
   myVouchers: MyVouchersReducer,
   myCertificates: MyCertificatesReducer,
   courseRegistration: CourseRegistrationReducer,
+  workExperienceMetadata: WorkExperienceMetadataReducer,
 });
 
 export default reducer;

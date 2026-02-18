@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import type { ProfileField } from 'store/types/profileMetadata';
 
-/** Predefined picklist options by field apiName */
+/** Predefined picklist options by field apiName (used when API does not send picklistValues) */
 const PICKLIST_OPTIONS: Record<string, string[]> = {
   Gender__c: ['Male', 'Female'],
   Marital_Status__c: ['Single', 'Married', 'Divorced', 'Separated', 'Widowed'],
@@ -9,6 +9,7 @@ const PICKLIST_OPTIONS: Record<string, string[]> = {
   Voice_Calls__c: ['Consent', 'Do Not Consent'],
   Text_Messages__c: ['Consent', 'Do Not Consent'],
   Fax_Messages__c: ['Consent', 'Do Not Consent'],
+  Current_Employment_Status__c: ['Employed', 'Unemployed', 'Self-Employed', 'Student', 'Retired', 'Others'],
 };
 
 /** Predefined multipicklist options by field apiName (matches API response values) */
@@ -70,7 +71,7 @@ const DynamicFormField = ({
 
     switch (field.fieldType) {
       case 'PICKLIST': {
-        const options = PICKLIST_OPTIONS[field.apiName];
+        const options = field.picklistValues ?? PICKLIST_OPTIONS[field.apiName];
         const useRadio = PICKLIST_RADIO_FIELDS.has(field.apiName) && options?.length;
         if (useRadio) {
           return (

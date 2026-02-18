@@ -44,6 +44,37 @@ export type ProfileMetadataResponse = {
   employmentHistory?: ProfileSection; // Optional as it might not always be present
 };
 
+// ============================================================================
+// Work Experience Metadata (from WorkExperience/Metadata API)
+// ============================================================================
+
+export type WorkExperienceSubSection = {
+  subSectionName: string;
+  sectionFields: ProfileField[];
+};
+
+export type WorkExperienceMetadataResponse = {
+  sectionName: string;
+  currentEmploymentStatus: ProfileField;
+  subSection1: WorkExperienceSubSection;
+  subSection2: WorkExperienceSubSection;
+};
+
+export type WorkExperienceMetadataState = {
+  metadata: WorkExperienceMetadataResponse | null;
+  loading: boolean;
+  error: string | null;
+};
+
+export const WORK_EXPERIENCE_METADATA_FETCH_START = 'WORK_EXPERIENCE_METADATA_FETCH_START';
+export const WORK_EXPERIENCE_METADATA_FETCH_SUCCESS = 'WORK_EXPERIENCE_METADATA_FETCH_SUCCESS';
+export const WORK_EXPERIENCE_METADATA_FETCH_ERROR = 'WORK_EXPERIENCE_METADATA_FETCH_ERROR';
+
+export type WorkExperienceMetadataAction =
+  | { type: typeof WORK_EXPERIENCE_METADATA_FETCH_START }
+  | { type: typeof WORK_EXPERIENCE_METADATA_FETCH_SUCCESS; payload: WorkExperienceMetadataResponse }
+  | { type: typeof WORK_EXPERIENCE_METADATA_FETCH_ERROR; payload: string };
+
 // Redux state for profile metadata
 export type ProfileMetadataState = {
   metadata: ProfileMetadataResponse | null;

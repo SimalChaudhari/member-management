@@ -27,6 +27,7 @@ import {
   updateAccountData,
   buildAccountPatchBody,
 } from 'store/action/AccountDataActions';
+import { fetchWorkExperienceMetadata } from 'store/action/EmploymentHistoryActions';
 import DynamicFormField from 'components/settings/DynamicFormField';
 import PageLoader from 'components/loading/PageLoader';
 import ErrorWithRetry from 'components/feedback/ErrorWithRetry';
@@ -90,6 +91,10 @@ const EditProfile = (): ReactElement => {
     error: accountError,
   } = useAppSelector((state) => state.accountData);
 
+  const workExperienceMetadata = useAppSelector(
+    (state) => state.workExperienceMetadata.metadata
+  );
+
   // Active tab state
   const [tabValue, setTabValue] = useState(0);
 
@@ -121,25 +126,21 @@ const EditProfile = (): ReactElement => {
   };
 
   /**
-   * Dynamically generate tabs based on available sections in metadata
-   * Returns array of tab objects with name and index
-   * Personal Details tab includes all sections (residential address, mailing address, phone/email, interests, telemarketing)
+   * Dynamically generate tabs based on available sections in metadata and Work Experience metadata
    */
   const getTabs = () => {
-    if (!metadata) return [];
-
     const tabs: Array<{ name: string; index: number }> = [];
     let index = 0;
 
-    // Personal Details tab (includes everything: residential address, mailing address, phone/email, interests, telemarketing)
-    if (metadata.personalDetails) {
+    if (metadata?.personalDetails) {
       tabs.push({ name: metadata.personalDetails.sectionName, index: index++ });
     }
 
-    // Employment History tab
-    if (metadata.employmentHistory) {
-      tabs.push({ name: metadata.employmentHistory.sectionName, index: index++ });
-    }
+    const employmentTabName =
+      workExperienceMetadata?.sectionName ??
+      metadata?.employmentHistory?.sectionName ??
+      'Employment History';
+    tabs.push({ name: employmentTabName, index: index++ });
 
     return tabs;
   };
@@ -217,22 +218,32 @@ const EditProfile = (): ReactElement => {
   }, [mapAccountDataToFormValues]);
 
   /**
-   * Fetch profile metadata and account data on component mount
+   * Fetch profile metadata, Work Experience metadata, and account data on component mount
    */
   useEffect(() => {
     dispatch(fetchProfileMetadata());
+    dispatch(fetchWorkExperienceMetadata());
 
-    // Fetch account data after a short delay to ensure metadata is loaded first
     const accountId = getAccountId();
     if (accountId) {
-      // Small delay to ensure metadata is fetched first
       const timer = setTimeout(() => {
         dispatch(fetchAccountData(accountId));
       }, 100);
-
       return () => clearTimeout(timer);
     }
   }, [dispatch]);
+
+  /**
+   * Sync current employment status from accountData into formValues when Work Experience metadata is loaded
+   */
+  useEffect(() => {
+    const field = workExperienceMetadata?.currentEmploymentStatus;
+    if (!field || !accountData) return;
+    const value = (accountData as Record<string, unknown>)[field.apiName];
+    if (value !== undefined && value !== null) {
+      setFormValues((prev) => ({ ...prev, [field.apiName]: String(value) }));
+    }
+  }, [workExperienceMetadata?.currentEmploymentStatus?.apiName, accountData]);
 
   /**
    * Handle field value change
@@ -583,16 +594,13 @@ const EditProfile = (): ReactElement => {
 
         // Employment History tab
         if (
-          metadata.employmentHistory &&
-          (tab.name === metadata.employmentHistory.sectionName ||
-            tab.name.toLowerCase().includes('employment') ||
-            tab.name.toLowerCase().includes('history'))
+          tab.name.toLowerCase().includes('employment') ||
+          tab.name.toLowerCase().includes('history')
         ) {
           return (
             <TabPanel key={tab.index} value={tabValue} index={tab.index}>
               <EmploymentHistoryTab
-                employmentHistory={metadata.employmentHistory}
-                accountData={accountData}
+                accountId={getAccountId()}
                 formValues={formValues}
                 onFieldChange={handleFieldChange}
                 disabledFieldApis={DISABLED_FIELD_APIS}
