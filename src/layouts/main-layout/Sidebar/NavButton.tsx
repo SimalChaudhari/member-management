@@ -106,14 +106,12 @@ const NavButton = ({
       {navItem.collapsible ? (
         <>
           <ListItemButton
-            LinkComponent={Link}
-            href={navItem.path}
-            onClick={() => {
-              // Only toggle collapse when sidebar is expanded
-              if (!isCollapsed) {
-                if (onToggle) {
-                  onToggle(checked);
-                }
+            component="div"
+            onClick={(e) => {
+              e.preventDefault();
+              // Only toggle collapse when sidebar is expanded; no navigation for parent
+              if (!isCollapsed && onToggle) {
+                onToggle(checked);
               }
             }}
             sx={{

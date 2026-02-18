@@ -122,7 +122,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.profileMembership,
-    element: <ComingSoon />,
+    element: <Navigate to={paths.profileMembership.editProfile} replace />,
   },
   {
     path: routePaths.editProfile,
@@ -154,7 +154,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.credentialsRecognition,
-    element: <ComingSoon />,
+    element: <Navigate to={paths.credentialsRecognition.digitalBadge} replace />,
   },
   {
     path: routePaths.digitalBadge,
@@ -166,7 +166,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.cpeLearning,
-    element: <ComingSoon />,
+    element: <Navigate to={paths.cpeLearning.cpeCompliance} replace />,
   },
   {
     path: routePaths.cpeCompliance,
@@ -194,7 +194,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.paymentsCredits,
-    element: <ComingSoon />,
+    element: <Navigate to={paths.paymentsCredits.myPayments} replace />,
   },
   {
     path: routePaths.myPayments,
@@ -210,7 +210,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.facilitiesServices,
-    element: <ComingSoon />,
+    element: <Navigate to={paths.facilitiesServices.facilitiesBooking} replace />,
   },
   {
     path: routePaths.facilitiesBooking,
@@ -226,7 +226,7 @@ const mainLayoutRoutes: RouteObject[] = [
   },
   {
     path: routePaths.supportCommunity,
-    element: <ComingSoon />,
+    element: <Navigate to={paths.supportCommunity.iscaCares} replace />,
   },
   {
     path: routePaths.iscaCares,
