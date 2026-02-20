@@ -76,6 +76,31 @@ function ssoTokenProxyPlugin(env: Record<string, string>): import('vite').Plugin
     configureServer(server) {
       if (!TOKEN_URL || !SSO_APP_ID || !SSO_APP_SECRET) return;
       server.middlewares.use((req: any, res: any, next: () => void) => {
+        // GET /api/sso/userinfo – proxy to Salesforce userinfo (avoid CORS)
+        if (req.method === 'GET' && req.url === '/api/sso/userinfo') {
+          const instanceUrl = (req.headers['x-instance-url'] as string)?.trim();
+          const auth = req.headers['authorization'];
+          if (!instanceUrl || !auth) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ error: 'Missing X-Instance-Url or Authorization' }));
+            return;
+          }
+          const userinfoUrl = `${instanceUrl.replace(/\/$/, '')}/services/oauth2/userinfo`;
+          fetch(userinfoUrl, { method: 'GET', headers: { Authorization: auth, Accept: 'application/json' } })
+            .then((r: Response) => r.text().then((text: string) => ({ status: r.status, text })))
+            .then(({ status, text }: { status: number; text: string }) => {
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = status;
+              res.end(text);
+            })
+            .catch((err: Error) => {
+              res.statusCode = 502;
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ error: err?.message ?? 'UserInfo proxy failed' }));
+            });
+          return;
+        }
         if (req.method !== 'POST' || req.url !== '/api/sso/token') {
           next();
           return;

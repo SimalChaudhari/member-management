@@ -130,18 +130,24 @@ export function getStoredInstanceUrl(): string | null {
   return getCookie(INSTANCE_URL_COOKIE_KEY);
 }
 
+/**
+ * Fetch user profile from Salesforce userinfo. Uses same-origin proxy in production to avoid CORS.
+ */
 export async function fetchUserInfo(): Promise<UserProfile> {
   const token = getStoredAccessToken();
   const instanceUrl = getStoredInstanceUrl();
   if (!token || !instanceUrl) {
     throw new Error('No access token or instance URL');
   }
-  const url = `${instanceUrl.replace(/\/$/, '')}/services/oauth2/userinfo`;
+
+  // Use same-origin proxy to avoid CORS (handled by Vite in dev, Vercel function in prod)
+  const url = '/api/sso/userinfo';
   const res = await fetch(url, {
-    headers: { 
+    method: 'GET',
+    headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
       Accept: 'application/json',
+      'X-Instance-Url': instanceUrl.replace(/\/$/, ''),
     },
   });
   if (!res.ok) {
