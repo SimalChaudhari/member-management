@@ -1,4 +1,4 @@
-import { ReactElement, MouseEvent, useState, useEffect } from 'react';
+import { ReactElement, MouseEvent, useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Avatar,
@@ -29,13 +29,13 @@ const ProfileDropdown = ({ isCollapsed = false }: ProfileDropdownProps): ReactEl
   const { profile: userProfile, loading, logout } = useAuthProfile();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
+  const hasFetchedMobileApi = useRef(false);
 
-  // Fetch user info from mobileapi endpoint on mount
+  // Fetch user info from mobileapi endpoint once when we have a profile but no FullName
   useEffect(() => {
-    if (userProfile && !userProfile.FullName) {
-      // Only fetch if we don't already have the mobileapi data
-      dispatch(fetchUserInfoFromMobileApi());
-    }
+    if (!userProfile || userProfile.FullName || hasFetchedMobileApi.current) return;
+    hasFetchedMobileApi.current = true;
+    dispatch(fetchUserInfoFromMobileApi());
   }, [dispatch, userProfile]);
 
   // Use FullName from API if available, otherwise fallback to name
