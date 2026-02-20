@@ -5,7 +5,7 @@
  */
 
 export const config = {
-  runtime: 'nodejs20.x',
+  runtime: 'nodejs',
 };
 
 function setCors(res, req) {
