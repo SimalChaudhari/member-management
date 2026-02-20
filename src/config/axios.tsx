@@ -2,17 +2,6 @@ import axios from 'axios';
 import { getStoredAccessToken, getStoredInstanceUrl, clearSsoTokens } from 'services/sso';
 import { paths } from 'routes/paths';
 
-/** Prefer stored instance URL (from SSO) so token matches the correct Salesforce host */
-function getSalesforceOrigin(fullUrl: string): string {
-  const instanceUrl = getStoredInstanceUrl();
-  if (instanceUrl) return instanceUrl.replace(/\/$/, '');
-  try {
-    return new URL(fullUrl, 'https://dummy').origin;
-  } catch {
-    return '';
-  }
-}
-
 /**
  * Shared axios instance for all API calls (Redux actions, components).
  * Use: import axiosInstance from 'config/axios';
@@ -43,7 +32,7 @@ axiosInstance.interceptors.request.use(
       const parsed = new URL(fullUrl, 'https://dummy');
       config.baseURL = '';
       config.url = '/api/salesforce' + parsed.pathname + parsed.search;
-      config.headers['X-Salesforce-Target'] = getSalesforceOrigin(fullUrl) || parsed.origin;
+      config.headers['X-Salesforce-Target'] = parsed.origin;
     }
 
     if (token) {

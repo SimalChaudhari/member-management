@@ -5,22 +5,10 @@
  */
 
 export const config = {
-  runtime: 'nodejs',
+  runtime: 'nodejs20.x',
 };
 
-function setCors(res, req) {
-  const origin = req.headers?.origin;
-  const o = Array.isArray(origin) ? origin[0] : origin;
-  if (o) res.setHeader('Access-Control-Allow-Origin', o);
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-}
-
 export default async function handler(req, res) {
-  setCors(res, req);
-  if (req.method === 'OPTIONS') {
-    return res.status(204).end();
-  }
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -34,16 +22,12 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'SSO not configured (missing env)' });
   }
 
-  const raw = req.body;
-  let body = raw;
-  if (typeof raw === 'string') {
-    try {
-      body = JSON.parse(raw);
-    } catch {
-      return res.status(400).json({ error: 'Invalid JSON body' });
-    }
+  let body;
+  try {
+    body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {};
+  } catch {
+    return res.status(400).json({ error: 'Invalid JSON body' });
   }
-  body = body || {};
 
   const { code, redirect_uri } = body;
   if (!code || !redirect_uri) {
@@ -72,4 +56,3 @@ export default async function handler(req, res) {
     res.status(502).json({ error: err?.message || 'Token exchange failed' });
   }
 }
-
