@@ -59,42 +59,26 @@ export function getSsoAuthorizeUrl(): string {
   return `${ssoConfig.authorizeUrl}?${params.toString()}`;
 }
 
+/**
+ * Token exchange: use same-origin proxy in dev and production to avoid CORS.
+ * In production the live server must expose /api/sso/token (or VITE_SSO_TOKEN_PROXY_URL)
+ * and perform the exchange with Salesforce server-side.
+ */
 export async function exchangeCodeForToken(code: string): Promise<SsoTokenResponse> {
   const redirectUri = ssoConfig.redirectUri;
+  const proxyUrl = import.meta.env.DEV ? '/api/sso/token' : (ssoConfig.tokenProxyUrl || '/api/sso/token');
 
-  if (import.meta.env.DEV) {
-    const response = await fetch('/api/sso/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, redirect_uri: redirectUri }),
-    });
-    const text = await response.text();
-    if (!response.ok) {
-      throw new Error(text ? `SSO token exchange failed: ${text}` : `SSO token exchange failed: ${response.status}`);
-    }
-    return JSON.parse(text) as SsoTokenResponse;
-  }
-
-  const body = new URLSearchParams({
-    grant_type: 'authorization_code',
-    client_id: ssoConfig.clientId,
-    client_secret: ssoConfig.clientSecret,
-    redirect_uri: redirectUri,
-    code,
-  });
-
-  const response = await fetch(ssoConfig.tokenUrl, {
+  const response = await fetch(proxyUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: body.toString(),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code, redirect_uri: redirectUri }),
   });
 
+  const text = await response.text();
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`SSO token exchange failed: ${response.status} ${text}`);
+    throw new Error(text ? `SSO token exchange failed: ${text}` : `SSO token exchange failed: ${response.status}`);
   }
-
-  return response.json() as Promise<SsoTokenResponse>;
+  return JSON.parse(text) as SsoTokenResponse;
 }
 
 /**
