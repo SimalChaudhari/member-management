@@ -8,7 +8,19 @@ export const config = {
   runtime: 'nodejs20.x',
 };
 
+function setCors(res, req) {
+  const origin = req.headers?.origin;
+  const o = Array.isArray(origin) ? origin[0] : origin;
+  if (o) res.setHeader('Access-Control-Allow-Origin', o);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+}
+
 export default async function handler(req, res) {
+  setCors(res, req);
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Method Not Allowed' });
@@ -60,3 +72,4 @@ export default async function handler(req, res) {
     res.status(502).json({ error: err?.message || 'Token exchange failed' });
   }
 }
+
