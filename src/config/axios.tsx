@@ -8,6 +8,17 @@ import { paths } from 'routes/paths';
  */
 const API_URL = 'https://eservices-isca--fuat.sandbox.my.site.com';
 
+/** Prefer stored instance URL (from SSO) so token matches the correct Salesforce host */
+function getSalesforceTarget(fullUrl: string): string {
+  const instanceUrl = getStoredInstanceUrl();
+  if (instanceUrl) return instanceUrl.replace(/\/$/, '');
+  try {
+    return new URL(fullUrl, 'https://dummy').origin;
+  } catch {
+    return '';
+  }
+}
+
 const axiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
@@ -32,7 +43,7 @@ axiosInstance.interceptors.request.use(
       const parsed = new URL(fullUrl, 'https://dummy');
       config.baseURL = '';
       config.url = '/api/salesforce' + parsed.pathname + parsed.search;
-      config.headers['X-Salesforce-Target'] = parsed.origin;
+      config.headers['X-Salesforce-Target'] = getSalesforceTarget(fullUrl) || parsed.origin;
     }
 
     if (token) {
