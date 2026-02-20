@@ -2,6 +2,17 @@ import axios from 'axios';
 import { getStoredAccessToken, getStoredInstanceUrl, clearSsoTokens } from 'services/sso';
 import { paths } from 'routes/paths';
 
+/** Prefer stored instance URL (from SSO) so token matches the correct Salesforce host */
+function getSalesforceOrigin(fullUrl: string): string {
+  const instanceUrl = getStoredInstanceUrl();
+  if (instanceUrl) return instanceUrl.replace(/\/$/, '');
+  try {
+    return new URL(fullUrl, 'https://dummy').origin;
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Shared axios instance for all API calls (Redux actions, components).
  * Use: import axiosInstance from 'config/axios';
@@ -20,32 +31,23 @@ axiosInstance.interceptors.request.use(
   (config) => {
     const token = getStoredAccessToken();
 
-    // In development, send Salesforce API requests through Vite proxy to avoid CORS
-    if (import.meta.env.DEV && config.url) {
-      const url = config.url.startsWith('http') ? config.url : (config.baseURL || '') + (config.url.startsWith('/') ? config.url : '/' + config.url);
-      if (url.includes('salesforce.com') || url.includes('my.site.com')) {
-        const parsed = new URL(url);
-        config.baseURL = '';
-        config.url = '/api/salesforce' + parsed.pathname + parsed.search;
-        // Tell the dev server which Salesforce host to proxy to (so token matches instance)
-        config.headers['X-Salesforce-Target'] = parsed.origin;
-      }
+    // Build final URL to detect Salesforce requests
+    const fullUrl = config.url?.startsWith('http')
+      ? config.url
+      : (config.baseURL || '') + (config.url?.startsWith('/') ? config.url : '/' + (config.url || ''));
+    const isSalesforce =
+      fullUrl && (String(fullUrl).includes('salesforce.com') || String(fullUrl).includes('my.site.com'));
+
+    // Send all Salesforce API requests through same-origin proxy (Vite in dev, Vercel in prod) to avoid CORS
+    if (isSalesforce) {
+      const parsed = new URL(fullUrl, 'https://dummy');
+      config.baseURL = '';
+      config.url = '/api/salesforce' + parsed.pathname + parsed.search;
+      config.headers['X-Salesforce-Target'] = getSalesforceOrigin(fullUrl) || parsed.origin;
     }
 
     if (token) {
-      // Ensure Authorization header is set correctly with Bearer prefix
-      // Token is already trimmed in getStoredAccessToken()
       config.headers.Authorization = `Bearer ${token}`;
-
-      // For Salesforce API endpoints (/services/apexrest/), use instance_url if available
-      // This ensures token works with the correct Salesforce instance domain (production only; dev uses proxy)
-      if (!import.meta.env.DEV) {
-        const instanceUrl = getStoredInstanceUrl();
-        if (instanceUrl && config.url && config.url.startsWith('/services/')) {
-          // Override baseURL to use instance_url for Salesforce API calls
-          config.baseURL = instanceUrl.replace(/\/$/, '');
-        }
-      }
     }
     return config;
   },
