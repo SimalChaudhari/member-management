@@ -16,7 +16,6 @@ import {
   updateEmploymentRecord,
   deleteEmploymentRecord,
 } from 'store/action/EmploymentHistoryActions';
-import { updateAccountData } from 'store/action/AccountDataActions';
 import type {
   ProfileField,
   EmploymentHistoryRecord,
