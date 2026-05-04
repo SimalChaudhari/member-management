@@ -14,6 +14,7 @@ const FEATURE_SEGMENTS = {
   PAYMENTS_CREDITS: 'payments-credits',
   FACILITIES_SERVICES: 'facilities-services',
   SUPPORT_COMMUNITY: 'support-community',
+  JOBS_PORTAL: 'jobs-portal',
 } as const;
 
 const AUTH_SEGMENTS = {
@@ -93,6 +94,36 @@ export const paths = {
     contactUs: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.SUPPORT_COMMUNITY, 'contact-us'),
   },
 
+  /** Jobs Portal (E‑Services) — authenticated only; role drives nav (individual / corporate / admin). */
+  jobsPortal: {
+    root: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL),
+    seekerDashboard: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'seeker-dashboard'),
+    browseJobs: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'browse-jobs'),
+    myApplications: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'my-applications'),
+    savedJobs: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'saved-jobs'),
+    careerProfile: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'career-profile'),
+    /** Employer console (inner header + sub-nav) — preferred entry for corporate */
+    employer: {
+      root: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer'),
+      jobs: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer', 'jobs'),
+      pipeline: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer', 'pipeline'),
+      talent: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer', 'talent'),
+      post: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer', 'post'),
+      jobApplicants: (jobId: string) =>
+        buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer', 'jobs', jobId, 'applicants'),
+    },
+    /** @deprecated Use jobsPortal.employer.root — kept for redirects */
+    employerDashboard: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer-dashboard'),
+    postJob: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'post-job'),
+    myJobPosts: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'my-job-posts'),
+    adminOverview: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'admin-overview'),
+    moderateJobs: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'moderate-jobs'),
+    verifyEmployers: buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'verify-employers'),
+    jobDetail: (jobId: string) => buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'jobs', jobId),
+    jobApplicants: (jobId: string) =>
+      buildPath(ROOT_PATHS.HOME, FEATURE_SEGMENTS.JOBS_PORTAL, 'employer', 'jobs', jobId, 'applicants'),
+  },
+
   auth: {
     login: buildPath(ROOT_PATHS.AUTH, AUTH_SEGMENTS.LOGIN),
     signup: buildPath(ROOT_PATHS.AUTH, AUTH_SEGMENTS.SIGNUP),
@@ -140,6 +171,18 @@ export const routePaths = {
   supportCommunity: getRelativePath(paths.supportCommunity.root),
   iscaCares: getRelativePath(paths.supportCommunity.iscaCares),
   contactUs: getRelativePath(paths.supportCommunity.contactUs),
+  jobsPortal: getRelativePath(paths.jobsPortal.root),
+  jobsPortalSeekerDashboard: getRelativePath(paths.jobsPortal.seekerDashboard),
+  jobsPortalBrowseJobs: getRelativePath(paths.jobsPortal.browseJobs),
+  jobsPortalMyApplications: getRelativePath(paths.jobsPortal.myApplications),
+  jobsPortalSavedJobs: getRelativePath(paths.jobsPortal.savedJobs),
+  jobsPortalCareerProfile: getRelativePath(paths.jobsPortal.careerProfile),
+  jobsPortalEmployerDashboard: getRelativePath(paths.jobsPortal.employerDashboard),
+  jobsPortalPostJob: getRelativePath(paths.jobsPortal.postJob),
+  jobsPortalMyJobPosts: getRelativePath(paths.jobsPortal.myJobPosts),
+  jobsPortalAdminOverview: getRelativePath(paths.jobsPortal.adminOverview),
+  jobsPortalModerateJobs: getRelativePath(paths.jobsPortal.moderateJobs),
+  jobsPortalVerifyEmployers: getRelativePath(paths.jobsPortal.verifyEmployers),
   login: AUTH_SEGMENTS.LOGIN,
   signup: AUTH_SEGMENTS.SIGNUP,
   resetPassword: AUTH_SEGMENTS.RESET_PASSWORD,

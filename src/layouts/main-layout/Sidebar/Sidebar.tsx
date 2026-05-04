@@ -1,4 +1,4 @@
-import { ReactElement, useState, useEffect } from 'react';
+import { ReactElement, useState, useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   Link,
@@ -13,7 +13,10 @@ import {
 import IconifyIcon from 'components/base/IconifyIcon';
 import logo from 'assets/logo/isca-.png';
 import Image from 'components/base/Image';
-import navItems from 'data/nav-items';
+import navItemsBase from 'data/nav-items';
+import { getJobsPortalNavItem } from 'data/jobs-nav-items';
+import { paths } from 'routes/paths';
+import { useJobsPortalRole } from 'services/jobs/useJobsPortalRole';
 import { useAuthProfile } from 'store/hooks';
 import NavButton from './NavButton';
 import ProfileDropdown from './ProfileDropdown';
@@ -24,6 +27,11 @@ interface SidebarProps {
 
 const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
   const { logout } = useAuthProfile();
+  const { role } = useJobsPortalRole();
+  const navItems = useMemo(
+    () => [...navItemsBase, getJobsPortalNavItem(role)],
+    [role],
+  );
   const { pathname } = useLocation();
   const collapsedWidth = 80;
   const expandedWidth = 300;
@@ -36,6 +44,12 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
    * Section root path (e.g. /support-community) counts as active so one click opens the menu.
    */
   const isMenuActive = (navItem: (typeof navItems)[number]): boolean => {
+    if (
+      navItem.path === paths.jobsPortal.root &&
+      (pathname === paths.jobsPortal.root || pathname.startsWith(`${paths.jobsPortal.root}/`))
+    ) {
+      return true;
+    }
     if (!navItem.sublist) return false;
     if (pathname === navItem.path) return true;
     return navItem.sublist.some(subItem =>

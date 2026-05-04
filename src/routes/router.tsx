@@ -111,9 +111,87 @@ const SignUp = lazy(async () => import('pages/authentication/SignUp'));
 const ResetPassword = lazy(async () => import('pages/authentication/ResetPassword'));
 const ForgotPassword = lazy(async () => import('pages/authentication/ForgotPassword'));
 
+const JobsPortalLayout = lazy(async () => import('pages/jobs-portal/JobsPortalLayout'));
+const JobsPortalRedirect = lazy(async () => import('pages/jobs-portal/JobsPortalRedirect'));
+const SeekerDashboard = lazy(async () => import('pages/jobs-portal/SeekerDashboard'));
+const JobSearch = lazy(async () => import('pages/jobs-portal/JobSearch'));
+const JobDetail = lazy(async () => import('pages/jobs-portal/JobDetail'));
+const MyApplications = lazy(async () => import('pages/jobs-portal/MyApplications'));
+const SavedJobs = lazy(async () => import('pages/jobs-portal/SavedJobs'));
+const CareerProfile = lazy(async () => import('pages/jobs-portal/CareerProfile'));
+const EmployerDashboard = lazy(async () => import('pages/jobs-portal/employer/EmployerDashboard'));
+const MyJobPosts = lazy(async () => import('pages/jobs-portal/employer/MyJobPosts'));
+const JobApplicants = lazy(async () => import('pages/jobs-portal/employer/JobApplicants'));
+const AdminOverview = lazy(async () => import('pages/jobs-portal/admin/AdminOverview'));
+const ModerateJobs = lazy(async () => import('pages/jobs-portal/admin/ModerateJobs'));
+const VerifyEmployers = lazy(async () => import('pages/jobs-portal/admin/VerifyEmployers'));
+
 // ============================================================================
 // ROUTE CONFIGURATIONS
 // ============================================================================
+
+const jobsPortalRoutes: RouteObject = {
+  path: 'jobs-portal',
+  element: <JobsPortalLayout />,
+  children: [
+    {
+      index: true,
+      element: <JobsPortalRedirect />,
+    },
+    {
+      path: 'seeker-dashboard',
+      element: <SeekerDashboard />,
+    },
+    {
+      path: 'browse-jobs',
+      element: <JobSearch />,
+    },
+    {
+      path: 'jobs/:jobId',
+      element: <JobDetail />,
+    },
+    {
+      path: 'my-applications',
+      element: <MyApplications />,
+    },
+    {
+      path: 'saved-jobs',
+      element: <SavedJobs />,
+    },
+    {
+      path: 'career-profile',
+      element: <CareerProfile />,
+    },
+    {
+      path: 'employer-dashboard',
+      element: <EmployerDashboard />,
+    },
+    {
+      path: 'post-job',
+      element: <Navigate to={`${paths.jobsPortal.myJobPosts}?new=1`} replace />,
+    },
+    {
+      path: 'my-job-posts',
+      element: <MyJobPosts />,
+    },
+    {
+      path: 'my-job-posts/:jobId/applicants',
+      element: <JobApplicants />,
+    },
+    {
+      path: 'admin-overview',
+      element: <AdminOverview />,
+    },
+    {
+      path: 'moderate-jobs',
+      element: <ModerateJobs />,
+    },
+    {
+      path: 'verify-employers',
+      element: <VerifyEmployers />,
+    },
+  ],
+};
 
 const mainLayoutRoutes: RouteObject[] = [
   {
@@ -236,6 +314,7 @@ const mainLayoutRoutes: RouteObject[] = [
     path: routePaths.contactUs,
     element: <Contact />,
   },
+  jobsPortalRoutes,
 ];
 
 const authRoutes: RouteObject[] = [
