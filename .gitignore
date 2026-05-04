@@ -13,6 +13,7 @@ dist-ssr
 *.local
 
 # Env (never commit secrets)
+.env
 src/.env
 .env.*.local
 
