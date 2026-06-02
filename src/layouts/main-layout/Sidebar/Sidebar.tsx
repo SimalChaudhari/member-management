@@ -25,7 +25,7 @@ import ProfileDropdown from './ProfileDropdown';
 interface SidebarProps {
   isCollapsed?: boolean;
 }
-
+//
 const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
   const { logout } = useAuthProfile();
   const { role } = useJobsPortalRole();
