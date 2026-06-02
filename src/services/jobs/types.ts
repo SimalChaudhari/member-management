@@ -100,6 +100,24 @@ export interface ApplicationRecord {
   screeningAnswers: Record<string, string>;
 }
 
+/** Mock seeker inbox counts for dashboard header (replace with API). */
+export interface SeekerInboxSummary {
+  applicationUpdatesCount: number;
+  recommendedJobsCount: number;
+  unreadNotificationCount: number;
+}
+
+export type SeekerNotificationKind = 'apply_submitted' | 'status_change' | 'recommendations' | 'system';
+
+export interface SeekerNotification {
+  id: string;
+  kind: SeekerNotificationKind;
+  title: string;
+  body: string;
+  createdAt: string;
+  read: boolean;
+}
+
 export interface EmployerApplicantRow {
   applicationId: string;
   profileSummary: string;

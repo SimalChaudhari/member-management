@@ -12,6 +12,8 @@ import type {
   JobsPortalRole,
   PendingEmployer,
   PendingModerationJob,
+  SeekerInboxSummary,
+  SeekerNotification,
 } from './types';
 
 const delay = (ms = 280) => new Promise((r) => setTimeout(r, ms));
@@ -30,7 +32,66 @@ let applications: ApplicationRecord[] = [
     appliedAt: new Date(Date.now() - 4 * 86400000).toISOString(),
     screeningAnswers: { sq1: 'Yes', sq2: '4' },
   },
+  {
+    applicationId: 'app_seed2',
+    jobId: 'job2',
+    jobTitle: 'Financial Analyst',
+    companyName: 'KPMG Singapore',
+    status: 'shortlisted',
+    appliedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+    screeningAnswers: { sq1: 'Yes', sq2: '5' },
+  },
+  {
+    applicationId: 'app_seed3',
+    jobId: 'job3',
+    jobTitle: 'Risk Advisory Consultant',
+    companyName: 'PwC Singapore',
+    status: 'interview',
+    appliedAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+    screeningAnswers: { sq1: 'Yes', sq2: '3' },
+  },
 ];
+
+let seekerNotifications: SeekerNotification[] = [
+  {
+    id: 'n_seed1',
+    kind: 'status_change',
+    title: 'Recruiter viewed your application',
+    body: 'Deloitte Singapore viewed your application for Senior Audit Manager.',
+    createdAt: new Date(Date.now() - 3600000).toISOString(),
+    read: false,
+  },
+  {
+    id: 'n_seed2',
+    kind: 'status_change',
+    title: 'You were shortlisted',
+    body: 'KPMG shortlisted you for Financial Analyst.',
+    createdAt: new Date(Date.now() - 5 * 3600000).toISOString(),
+    read: false,
+  },
+  {
+    id: 'n_seed3',
+    kind: 'recommendations',
+    title: 'New jobs for you',
+    body: 'We found audit and risk roles that match your profile.',
+    createdAt: new Date(Date.now() - 26 * 3600000).toISOString(),
+    read: false,
+  },
+];
+
+function pushSeekerNotification(entry: Omit<SeekerNotification, 'id' | 'read'> & { id?: string }): void {
+  const id = entry.id ?? `n_${Date.now()}`;
+  seekerNotifications = [{ ...entry, id, read: false }, ...seekerNotifications].slice(0, 40);
+}
+
+function applicationUpdatesCount(): number {
+  const windowMs = 48 * 3600000;
+  const now = Date.now();
+  return applications.filter((a) => {
+    if (a.status !== 'submitted') return true;
+    return now - new Date(a.appliedAt).getTime() < windowMs;
+  }).length;
+}
 
 function companyName(id: string): string {
   return companies.find((c) => c.companyId === id)?.name ?? 'Unknown company';
@@ -112,6 +173,33 @@ export async function listRecommendedJobs(_role: JobsPortalRole): Promise<JobPos
   return all.slice(0, 4);
 }
 
+export async function getSeekerInboxSummary(role: JobsPortalRole): Promise<SeekerInboxSummary> {
+  await delay(40);
+  const recommendedJobsCount = (await listRecommendedJobs(role)).length;
+  return {
+    applicationUpdatesCount: applicationUpdatesCount(),
+    recommendedJobsCount,
+    unreadNotificationCount: seekerNotifications.filter((n) => !n.read).length,
+  };
+}
+
+export async function listSeekerNotifications(): Promise<SeekerNotification[]> {
+  await delay(40);
+  return [...seekerNotifications].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+}
+
+export async function markSeekerNotificationsRead(ids?: string[]): Promise<void> {
+  await delay(40);
+  if (!ids?.length) {
+    seekerNotifications = seekerNotifications.map((n) => ({ ...n, read: true }));
+  } else {
+    const set = new Set(ids);
+    seekerNotifications = seekerNotifications.map((n) => (set.has(n.id) ? { ...n, read: true } : n));
+  }
+}
+
 export async function listMyApplications(): Promise<ApplicationRecord[]> {
   await delay();
   return [...applications].sort(
@@ -146,6 +234,12 @@ export async function applyToJob(jobId: string, payload: ApplyPayload): Promise<
       applicationsCount: (jobs[idx].applicationsCount ?? 0) + 1,
     };
   }
+  pushSeekerNotification({
+    kind: 'apply_submitted',
+    title: 'Application sent',
+    body: `You applied to ${job.title} at ${companyName(job.companyId)}.`,
+    createdAt: new Date().toISOString(),
+  });
   return rec;
 }
 
@@ -203,7 +297,16 @@ export async function updateApplicationStatus(
   status: ApplicationRecord['status'],
 ): Promise<void> {
   await delay();
+  const prev = applications.find((a) => a.applicationId === applicationId);
   applications = applications.map((a) => (a.applicationId === applicationId ? { ...a, status } : a));
+  if (prev && prev.status !== status) {
+    pushSeekerNotification({
+      kind: 'status_change',
+      title: 'Application status updated',
+      body: `Your application for ${prev.jobTitle} at ${prev.companyName} is now: ${status.replace(/_/g, ' ')}.`,
+      createdAt: new Date().toISOString(),
+    });
+  }
 }
 
 export async function listPendingModerationJobs(): Promise<PendingModerationJob[]> {
@@ -306,6 +409,50 @@ export function __resetJobsMock(): void {
       status: 'viewed',
       appliedAt: new Date(Date.now() - 4 * 86400000).toISOString(),
       screeningAnswers: { sq1: 'Yes', sq2: '4' },
+    },
+    {
+      applicationId: 'app_seed2',
+      jobId: 'job2',
+      jobTitle: 'Financial Analyst',
+      companyName: 'KPMG Singapore',
+      status: 'shortlisted',
+      appliedAt: new Date(Date.now() - 2 * 86400000).toISOString(),
+      screeningAnswers: { sq1: 'Yes', sq2: '5' },
+    },
+    {
+      applicationId: 'app_seed3',
+      jobId: 'job3',
+      jobTitle: 'Risk Advisory Consultant',
+      companyName: 'PwC Singapore',
+      status: 'interview',
+      appliedAt: new Date(Date.now() - 6 * 86400000).toISOString(),
+      screeningAnswers: { sq1: 'Yes', sq2: '3' },
+    },
+  ];
+  seekerNotifications = [
+    {
+      id: 'n_seed1',
+      kind: 'status_change',
+      title: 'Recruiter viewed your application',
+      body: 'Deloitte Singapore viewed your application for Senior Audit Manager.',
+      createdAt: new Date(Date.now() - 3600000).toISOString(),
+      read: false,
+    },
+    {
+      id: 'n_seed2',
+      kind: 'status_change',
+      title: 'You were shortlisted',
+      body: 'KPMG shortlisted you for Financial Analyst.',
+      createdAt: new Date(Date.now() - 5 * 3600000).toISOString(),
+      read: false,
+    },
+    {
+      id: 'n_seed3',
+      kind: 'recommendations',
+      title: 'New jobs for you',
+      body: 'We found audit and risk roles that match your profile.',
+      createdAt: new Date(Date.now() - 26 * 3600000).toISOString(),
+      read: false,
     },
   ];
 }

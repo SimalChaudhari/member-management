@@ -72,7 +72,7 @@ const JobsPortalLayout = (): ReactElement => {
                   Switch role to preview navigation. Connect your API in <code>services/jobs/jobsApi.ts</code>.
                 </Typography>
               </Stack>
-              <FormControl size="small" sx={{ minWidth: 200 }}>
+              <FormControl size="small" sx={{ width: { xs: '100%', md: 220 }, minWidth: { xs: 0, md: 220 } }}>
                 <InputLabel id="jobs-dev-role-label">Preview as</InputLabel>
                 <Select
                   labelId="jobs-dev-role-label"

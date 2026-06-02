@@ -8,8 +8,11 @@ const JobsShell = ({ children }: PropsWithChildren): ReactElement => (
   <Box
     sx={{
       width: '100%',
+      maxWidth: '100%',
+      minWidth: 0,
       mx: 'auto',
-      px: { xs: 0, sm: 0.5 },
+      boxSizing: 'border-box',
+      px: { xs: 1.5, sm: 2, md: 2.5 },
     }}
   >
     {children}

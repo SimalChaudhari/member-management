@@ -7,6 +7,7 @@ import JobCardSkeleton from 'pages/jobs-portal/components/JobCardSkeleton';
 import JobListingCard from 'pages/jobs-portal/components/JobListingCard';
 import JobsPageHeader from 'pages/jobs-portal/components/JobsPageHeader';
 import JobsShell from 'pages/jobs-portal/components/JobsShell';
+import SeekerNotificationHeader from 'pages/jobs-portal/components/SeekerNotificationHeader';
 import { paths } from 'routes/paths';
 import { getCompanyDisplayName, listRecommendedJobs } from 'services/jobs/jobsApi';
 import { useJobsPortalRole } from 'services/jobs/useJobsPortalRole';
@@ -33,11 +34,21 @@ const SeekerDashboard = (): ReactElement => {
 
   return (
     <JobsShell>
+      <Stack spacing={{ xs: 3, sm: 3.5 }} sx={{ width: '100%', minWidth: 0, pb: { xs: 2, sm: 3 } }}>
+      <SeekerNotificationHeader />
+
       <JobsPageHeader
         title="Top job picks for you"
         subtitle="Based on your profile, skills, and preferences (mock recommendations in dev)."
+        sx={{ mb: 0 }}
         action={
-          <Button component={RouterLink} to={paths.jobsPortal.browseJobs} variant="outlined" color="primary">
+          <Button
+            component={RouterLink}
+            to={paths.jobsPortal.browseJobs}
+            variant="outlined"
+            color="primary"
+            sx={{ width: { xs: '100%', sm: 'auto' }, py: { xs: 1.25, sm: 1 } }}
+          >
             See all jobs
           </Button>
         }
@@ -46,11 +57,12 @@ const SeekerDashboard = (): ReactElement => {
       <Paper
         elevation={0}
         sx={{
-          p: { xs: 2, md: 2.5 },
-          mb: 3,
+          p: { xs: 2, sm: 2.25, md: 2.5 },
+          mb: 0,
           borderRadius: 2,
-          background: 'linear-gradient(135deg, rgba(10,102,194,0.08) 0%, rgba(10,102,194,0.02) 100%)',
-          border: '1px solid rgba(10, 102, 194, 0.12)',
+          background: 'linear-gradient(135deg, rgba(14, 65, 111, 0.07) 0%, rgba(14, 65, 111, 0.02) 100%)',
+          border: '1px solid rgba(14, 65, 111, 0.1)',
+          boxShadow: '0 2px 12px rgba(14, 65, 111, 0.06)',
         }}
       >
         <Typography variant="subtitle1" fontWeight={700} gutterBottom>
@@ -60,7 +72,13 @@ const SeekerDashboard = (): ReactElement => {
           Stronger profiles get better matches and more recruiter views — add headline, experience, and salary
           expectations.
         </Typography>
-        <Button component={RouterLink} to={paths.jobsPortal.careerProfile} variant="contained" size="medium">
+        <Button
+          component={RouterLink}
+          to={paths.jobsPortal.careerProfile}
+          variant="contained"
+          size="medium"
+          sx={{ width: { xs: '100%', sm: 'fit-content' }, py: { xs: 1.25, sm: 1 } }}
+        >
           Update career profile
         </Button>
       </Paper>
@@ -84,6 +102,7 @@ const SeekerDashboard = (): ReactElement => {
           ))}
         </Grid>
       )}
+      </Stack>
     </JobsShell>
   );
 };
