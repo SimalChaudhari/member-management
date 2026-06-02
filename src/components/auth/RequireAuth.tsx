@@ -9,8 +9,9 @@ import { paths } from 'routes/paths';
 export function RequireAuth({ children }: PropsWithChildren): ReactElement {
   const location = useLocation();
   const token = getStoredAccessToken();
+  const requireLogin = import.meta.env.VITE_REQUIRE_LOGIN !== 'false';
 
-  if (!token) {
+  if (requireLogin && !token) {
     return <Navigate to={paths.auth.login} state={{ from: location }} replace />;
   }
 

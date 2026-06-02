@@ -16,6 +16,7 @@ import Image from 'components/base/Image';
 import navItemsBase from 'data/nav-items';
 import { getJobsPortalNavItem } from 'data/jobs-nav-items';
 import { paths } from 'routes/paths';
+import { getStoredAccessToken } from 'services/sso';
 import { useJobsPortalRole } from 'services/jobs/useJobsPortalRole';
 import { useAuthProfile } from 'store/hooks';
 import NavButton from './NavButton';
@@ -28,6 +29,8 @@ interface SidebarProps {
 const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
   const { logout } = useAuthProfile();
   const { role } = useJobsPortalRole();
+  const hideMenuWithoutLogin = import.meta.env.VITE_HIDE_MENU_WITHOUT_LOGIN !== 'false';
+  const hasAccessToken = Boolean(getStoredAccessToken());
   const navItems = useMemo(
     () => [...navItemsBase, getJobsPortalNavItem(role)],
     [role],
@@ -86,6 +89,10 @@ const Sidebar = ({ isCollapsed = false }: SidebarProps): ReactElement => {
       setOpenMenuIndex(index);
     }
   };
+
+  if (hideMenuWithoutLogin && !hasAccessToken) {
+    return <></>;
+  }
 
   return (
     <Stack
